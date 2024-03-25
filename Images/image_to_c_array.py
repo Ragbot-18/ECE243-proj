@@ -25,5 +25,5 @@ def image_to_c_array_file(image_path, output_file):
         
         file.write("};\n")
 
-image_path = 'game_background.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'game_background.txt')
+image_path = 'Knight_Walking6.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Knight_Walking6.txt')
