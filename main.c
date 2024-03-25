@@ -21,9 +21,9 @@ int vgaWidth = 320;
 int vgaHeight = 240;
 
 
+Knight testdummy; // TESTING
 
-
-
+unsigned short *KnightWalking[6] = {Knight_Walking1, Knight_Walking2, Knight_Walking3, Knight_Walking4, Knight_Walking5, Knight_Walking6};
 
 
 
@@ -31,6 +31,13 @@ int vgaHeight = 240;
 //---------------------------------------------MAIN FUNCTION-------------------------------------------------//
 int main(){
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
+
+
+    //TESTING
+    testdummy.xpos = 50;
+    testdummy.ypos = 200;
+    testdummy.width = 15;
+    testdummy.height = 22;
 
     
 	for (int y=0; y<240; y++){
@@ -52,6 +59,8 @@ int main(){
     *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // we draw on the back buffer
     clear_screen();  // pixel_buffer_start points to the pixel buffer
+    
+    draw_background();
 
     while (1) {
         /* Erase any boxes and lines that were drawn in the last iteration */
@@ -97,6 +106,68 @@ void clear_screen() {
   int y, x;
   for (x = 0; x < vgaWidth; x++)
     for (y = 0; y < vgaHeight; y++) plot_pixel(x, y, 0);
+}
+
+
+void draw(){
+    //first erase old objects
+    clear_screen();  // get rid of this later
+    //erase_knights();
+
+
+    //draw objects 
+    draw_sprite(testdummy.xpos, testdummy.ypos, );
+
+
+
+    //update positions of everything 
+    update_knights();
+
+}
+
+
+void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[height][width]) {
+    int sxi, syi; // sprite pixel position
+    int xi, yi;   // current pixel being drawn
+	
+	for (sxi = 0; sxi < width; sxi++)
+		for (syi = 0; syi < height; syi++) {
+		   xi = x + sxi;
+		   yi = y + syi;
+     	   fbp->pixels[yi][xi] = sprite[syi][sxi];
+	}
+}
+
+
+void draw_background(){
+    for (int x = 0; x < vgaWidth; x++){
+        for (int y = 0; y < vgaHeight; y++){
+            plot_pixel(x, y, game_background[y][x]);
+        }
+    }
+
+}
+
+
+void spawn_knight(){
+
+}
+
+
+void erase_knights(){
+
+
+
+}
+
+
+void update_knights(){
+    // check collisions or enemy detection
+
+
+    // update x and y position as well as currentState 
+    
+
 }
 /*************************************************************************************************************/
 

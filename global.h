@@ -16,6 +16,7 @@ Last Updated: Mar. 24th, 2024
 
 
 
+
 /*************************************************************************************************************/
 //FUNCTION HEADERS
 
@@ -23,7 +24,12 @@ void wait_for_vsync();
 void plot_pixel(int x, int y, short int color);
 void clear_screen();
 void draw();
-void draw_background();
+    void draw_sprite(int x, int y, int width, int height, uint16_t sprite[][width]); 
+        // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
+    void draw_background();
+    void spawn_knight();
+    void erase_knights();
+    void update_knights();
 
 //void draw();
     //void update_positions --> have different parts of code to update different types of characters
@@ -43,11 +49,23 @@ typedef enum {
     GameOver
 } gameState;
 
+
+typedef enum {
+    Default,
+    Walking,
+    Attacking
+
+} spriteState;
+
+
 typedef struct Knight {
     int xpos;
     int ypos;
-    int state;
+    int width;
+    int height;
     int health;
+    spriteState state;
+    int currentImage;
 
 
 } Knight;
