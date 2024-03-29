@@ -21,7 +21,7 @@ Last Updated: Mar. 24th, 2024
 //FUNCTION HEADERS
 
 void wait_for_vsync();
-void plot_pixel(int x, int y, short int color);
+void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
     void draw_sprite(int x, int y, int width, int height, uint16_t sprite[][width]); 
@@ -30,7 +30,7 @@ void draw();
     void spawn_knight();
     void erase_knights();
     void update_knights();
-
+void intializeSprites();
 //void draw();
     //void update_positions --> have different parts of code to update different types of characters
 
@@ -60,13 +60,15 @@ typedef enum {
 
 typedef struct Knight {
     int xpos;
+    int dx;
     int ypos;
     int width;
     int height;
     int health;
     spriteState state;
+    unsigned short (*image)[22][15];
     int currentImage;
-
+    bool isVisible;
 
 } Knight;
 
