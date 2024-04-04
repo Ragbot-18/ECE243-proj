@@ -13,6 +13,26 @@ Last Updated: Mar. 24th, 2024
 #include "stdlib.h"
 #include "images.h"
 
+#include "nios2_ctrl_reg_macros.h"
+//#include "address_map_nios2.h"
+
+/*************************************************************************************************************/
+//GLOBAL DEFINATIONS
+#define KEY_BUFFER_SIZE 64
+
+/*************************************************************************************************************/
+
+/*************************************************************************************************************/
+//GLOBAL VARIABLES
+
+
+
+volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
+volatile int key_buffer_count = 0; //counter for the key buffer;
+int g = 10; // gravity
+
+
+/*************************************************************************************************************/
 
 
 
@@ -74,8 +94,36 @@ typedef struct Knight {
 
 } Knight;
 
+typedef struct Tower {
+    int xpos;
+    int ypos;
+    int width;
+    int height;
+    int health;
+    int hitbox; // this is the right hand hitbox of the tower (xpos + width)
+    int detectionRange; // this is the range past the hitbox that the tower will be scanning for entities
+    spriteState state;
+    // unsigned short (*image)[22][15];
+    // int currentImage;
+    // bool isVisible;
 
+} Tower;
 
+typedef struct Projectile {
+    int xpos;
+    int ypos;
+    int dx;
+    int dy;
+    int speed;
+    //int damage;
+    //int range;
+    //int type;
+    // spriteState state;
+    // unsigned short (*image)[22][15];
+    // int currentImage;
+    // bool isVisible;
+
+} Projectile;
 
 
 /*************************************************************************************************************/
