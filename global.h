@@ -65,6 +65,8 @@ typedef struct Knight {
     int width;
     int height;
     int health;
+    int hitbox; // this is the right hand hitbox of the knight (xpos + width)
+    int detectionRange; // this is the range past the hitbox that the knight will be scanning for entities
     spriteState state;
     unsigned short (*image)[22][15];
     int currentImage;
