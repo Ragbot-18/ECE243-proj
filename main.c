@@ -23,12 +23,17 @@ Last Updated: Mar. 24th, 2024
 #define KNIGHT_ATTACKING_WIDTH 27
 #define KNIGHT_ATTACKING_HEIGHT 19
 
+#define DIGIT_WIDTH 6
+#define DIGIT_HEIGHT 10
+
 // Local Global Variables
 struct fb_t { unsigned short volatile  pixels[256][512]; };
 struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
 gameState currentGameState = Intro;
 
-
+time_t start_time;
+time_t last_currency_update; 
+int currency = 0;
 
 volatile int pixel_buffer_start;  // global variable for the pixel buffer
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
@@ -53,9 +58,8 @@ unsigned short (*e_knightWalking[6])[22][15] = {Enemy_Knight_Walking1, Enemy_Kni
 unsigned short (*e_knightAttacking[3])[19][27] = {Enemy_Knight_Attacking1, Enemy_Knight_Attacking2, Enemy_Knight_Attacking3};
 
 
-/* function prototypes */
-int main();
-void interrupt_handler(void);
+unsigned short (*numberImages[10])[10][6] = {Number_0, Number_1, Number_2, Number_3, Number_4, Number_5, Number_6, Number_7, Number_8, Number_9};
+
 
 
 
@@ -182,6 +186,10 @@ void interrupt_handler(void)
     {
         PS2_ISR();
     }
+    if (ipending & 0x1) // interval timer is interrupt level 0
+    {
+    interval_timer_ISR();
+    }
     // else, ignore the interrupt
     return;
 }
@@ -190,6 +198,7 @@ void interrupt_handler(void)
 /*************************************************************************************************************/
 //---------------------------------------------MAIN FUNCTION-------------------------------------------------//
 int main(){
+    init_PS2_interrupt();
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
 
 
@@ -221,13 +230,26 @@ int main(){
     spawn_knight(); //TESTING - will link this with appropriate keyboard press within Game case below
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
 
+    time(&start_time); // This captures the current time as the start time (NEED TO MOVE THIS INTO GAME STATE EVENTUALLY)
+    printf("Start Time: %ld\n", start_time);
+    last_currency_update = start_time;
+    update_currency();
+
     while (1) {
+        while(key_buffer_count!=0){
+            char data = key_buffer[key_buffer_count-1];
+            volatile int* LEDS = (volatile int*) 0xff200000;
+            *(LEDS) = data;
+            key_buffer[key_buffer_count-1] = 0;
+            key_buffer_count--;
+        }
         /* Erase any boxes and lines that were drawn in the last iteration */
         //draw(x_box, y_box, dx, dy, boxcolour);
         draw();
         // code for drawing the boxes and lines (not shown)
         // code for updating the locations of boxes (not shown)
-
+        
+        
 
         // NEED TO DO: create switch case statements for different parts of the game + integrate keyboard usage
         switch (currentGameState){
@@ -309,12 +331,14 @@ void draw(){
 
     //draw objects 
     draw_background();
+    draw_currency(20, 190);
     // draw_sprite(testdummy.xpos, testdummy.ypos, testdummy.width, testdummy.height, *knightWalking[0]); // TESTING (this works)
     draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, *knightList[0].image); 
 
 
 
-    //update positions of everything 
+    //update everything 
+    update_currency();
     update_knights();
 
 }
@@ -412,6 +436,127 @@ void update_knights(){
         }
     }
 }
+
+
+void update_currency() {
+    printf("Currency: %d\n", currency);
+    time_t current_time;
+    current_time = time(NULL); 
+    
+    printf("Present Time: %ld, Currency: %d\n", current_time, currency);
+    double elapsed_seconds_since_last_update = difftime(current_time, last_currency_update);
+    printf("elapsed time since last update: %f\n", elapsed_seconds_since_last_update);
+    
+    // Increment currency every 2 seconds
+    if (elapsed_seconds_since_last_update >= 2) {
+        currency += 5; // Increase currency by 5 every 2 seconds
+        printf("2 seconds passed -> Currency: %d\n", currency);
+        last_currency_update = current_time; // Reset last update time
+        printf("elapsed time since last update: %f\n", difftime(current_time, last_currency_update));
+    }
+    printf("AFTER: %f, Currency: %d\n", difftime(current_time, last_currency_update), currency);
+}
+
+
+
+void draw_currency(int x, int y) {
+    int temp_currency = currency;
+    int digit_width_with_spacing = DIGIT_WIDTH + 2; // Assuming 2 pixel space between digits for clarity
+
+    // If currency is 0, directly draw the '0' digit
+    if (temp_currency == 0) {
+        draw_sprite(x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[0]);
+        return;
+    }
+
+    // Calculate the number of digits in the currency to adjust starting x position
+    int num_digits = 0;
+    for (int temp = temp_currency; temp > 0; temp /= 10) {
+        num_digits++;
+    }
+    
+    // Adjust the starting x position based on the number of digits to draw from left to right
+    int adjusted_x = x + (num_digits - 1) * digit_width_with_spacing;
+    
+    while (temp_currency > 0) {
+        int digit = temp_currency % 10; // Extract the rightmost digit
+        temp_currency /= 10; // Remove the rightmost digit
+        
+        // Draw the current digit
+        // Note: numberImages array is indexed correctly with 0 being the first element
+        draw_sprite(adjusted_x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[digit]);
+        
+        // Move to the next position on the left
+        adjusted_x -= digit_width_with_spacing;
+    }
+}
+
+/*******************************************************************************
+ * This function sets up the PS2 keyboard interrupt.
+ ********************************************************************************/
+void init_PS2_interrupt(void)
+{
+    volatile int *PS2_ptr = (int *)0xFF200100;              // PS2 base address
+
+    // PS/2 set up interrupts
+    *(PS2_ptr+1) = 0x1; // Make RE field 1 to enable interrupts
+
+    /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
+    NIOS2_WRITE_IENABLE(0b1000000);
+    int ctl0status;
+    NIOS2_READ_STATUS(ctl0status);
+    if( ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
+    else
+        NIOS2_WRITE_STATUS(1); // enable Nios II interrupts if they are currently disabled
+    return;
+}
+
+
+/*******************************************************************************
+ * This function is the PS2 interrupt service routine.
+ ********************************************************************************/
+void PS2_ISR(void)
+{
+    /* Declare volatile pointers to I/O registers (volatile means that IO load
+and store instructions will be used to access these pointer locations,
+instead of regular memory loads and stores) */
+    volatile int *PS2_ptr = (int *)0xFF200100;
+    int PS2_data, RVALID, RAVAIL;
+    char KeyData;
+    // PS/2 mouse needs to be reset (must be already plugged in)
+    //  *(PS2_ptr) = 0xFF; // reset
+    do // loop while RVALID is 1
+    {
+        PS2_data = *(PS2_ptr);      // read the Data register in the PS/2 port
+        RVALID = PS2_data & 0x8000; // extract the RVALID field
+        RAVAIL = (PS2_data & 0xFFFF0000)>>16; // extract the RAVAIL field
+        if (RVALID)
+        {
+            KeyData = PS2_data & 0xFF; // get the keycode
+            if(key_buffer_count < 128){
+                key_buffer[key_buffer_count+1] = KeyData;
+                key_buffer_count++;
+            }
+            else{
+                key_buffer_count = 0;
+                key_buffer[key_buffer_count+1] = KeyData;
+            }
+        }
+    }
+    while(RAVAIL > 0);
+    return;
+}
+
+void interval_timer_ISR() {
+    volatile int * interval_timer_ptr = (int *)0xFF202000;
+
+    
+    *(interval_timer_ptr) = 0; // clear the interrupt
+
+    
+return;
+}
+
 
 /*************************************************************************************************************/
 

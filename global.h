@@ -11,10 +11,28 @@ Last Updated: Mar. 24th, 2024
 #include "stdio.h"
 #include "stdbool.h"
 #include "stdlib.h"
+#include "time.h"
+#include "string.h"
 #include "images.h"
 
-#include "nios2_ctrl_reg_macros.h"
-//#include "address_map_nios2.h"
+//#include "nios2_ctrl_reg_macros.h"
+
+#define NIOS2_READ_STATUS(dest) \
+    do { dest = __builtin_rdctl(0); } while (0)
+#define NIOS2_WRITE_STATUS(src) \
+    do { __builtin_wrctl(0, src); } while (0)
+#define NIOS2_READ_ESTATUS(dest) \
+    do { dest = __builtin_rdctl(1); } while (0)
+#define NIOS2_READ_BSTATUS(dest) \
+    do { dest = __builtin_rdctl(2); } while (0)
+#define NIOS2_READ_IENABLE(dest) \
+    do { dest = __builtin_rdctl(3); } while (0)
+#define NIOS2_WRITE_IENABLE(src) \
+    do { __builtin_wrctl(3, src); } while (0)
+#define NIOS2_READ_IPENDING(dest) \
+    do { dest = __builtin_rdctl(4); } while (0)
+#define NIOS2_READ_CPUID(dest) \
+    do { dest = __builtin_rdctl(5); } while (0)
 
 /*************************************************************************************************************/
 //GLOBAL DEFINATIONS
@@ -39,7 +57,8 @@ int g = 10; // gravity
 
 /*************************************************************************************************************/
 //FUNCTION HEADERS
-
+int main();
+void interrupt_handler(void);
 void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
@@ -48,13 +67,18 @@ void draw();
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
     void draw_background();
     void spawn_knight();
-    void erase_knights();
     void update_knights();
+    void draw_currency();
+    void update_currency();
 void intializeSprites();
 //void draw();
     //void update_positions --> have different parts of code to update different types of characters
 
+void update_game();
 
+void init_PS2_interrupt(void);
+void PS2_ISR(void);
+void interval_timer_ISR();
 
 /*************************************************************************************************************/
 

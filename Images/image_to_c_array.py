@@ -25,5 +25,5 @@ def image_to_c_array_file(image_path, output_file):
         
         file.write("};\n")
 
-image_path = 'Enemy_Knight_Attacking3.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Enemy_Knight_Attacking3.txt')
+image_path = 'Number_9.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Number_9.txt')

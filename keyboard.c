@@ -1,4 +1,20 @@
 #include "global.h" // defines global values
+#define NIOS2_READ_STATUS(dest) \
+    do { dest = __builtin_rdctl(0); } while (0)
+#define NIOS2_WRITE_STATUS(src) \
+    do { __builtin_wrctl(0, src); } while (0)
+#define NIOS2_READ_ESTATUS(dest) \
+    do { dest = __builtin_rdctl(1); } while (0)
+#define NIOS2_READ_BSTATUS(dest) \
+    do { dest = __builtin_rdctl(2); } while (0)
+#define NIOS2_READ_IENABLE(dest) \
+    do { dest = __builtin_rdctl(3); } while (0)
+#define NIOS2_WRITE_IENABLE(src) \
+    do { __builtin_wrctl(3, src); } while (0)
+#define NIOS2_READ_IPENDING(dest) \
+    do { dest = __builtin_rdctl(4); } while (0)
+#define NIOS2_READ_CPUID(dest) \
+    do { dest = __builtin_rdctl(5); } while (0)
 
 /*******************************************************************************
  * This function sets up the PS2 keyboard interrupt.
@@ -56,4 +72,12 @@ instead of regular memory loads and stores) */
     return;
 }
 
+void interval_timer_ISR() {
+    volatile int * interval_timer_ptr = (int *)0xFF202000;
 
+    
+    *(interval_timer_ptr) = 0; // clear the interrupt
+
+    
+return;
+}
