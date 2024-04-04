@@ -182,7 +182,7 @@ void interrupt_handler(void)
 {
     int ipending;
     NIOS2_READ_IPENDING(ipending);
-    if (ipending & 0x7) // PS2 is interrupt level 7
+    if (ipending & 0b10000000) // PS2 is interrupt level 7
     {
         PS2_ISR();
     }
@@ -502,7 +502,7 @@ void init_PS2_interrupt(void)
     *(PS2_ptr+1) = 0x1; // Make RE field 1 to enable interrupts
 
     /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
-    NIOS2_WRITE_IENABLE(0b1000000);
+    NIOS2_WRITE_IENABLE(0b10000000);
     int ctl0status;
     NIOS2_READ_STATUS(ctl0status);
     if( ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
@@ -533,7 +533,7 @@ instead of regular memory loads and stores) */
         if (RVALID)
         {
             KeyData = PS2_data & 0xFF; // get the keycode
-            if(key_buffer_count < 128){
+            if(key_buffer_count < 64){
                 key_buffer[key_buffer_count+1] = KeyData;
                 key_buffer_count++;
             }

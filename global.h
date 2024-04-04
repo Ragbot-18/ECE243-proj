@@ -63,7 +63,7 @@ void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
-    void draw_sprite(int x, int y, int width, int height, uint16_t sprite[][width]); 
+    void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[][width]); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
     void draw_background();
     void spawn_knight();
