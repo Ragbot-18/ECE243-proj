@@ -13,7 +13,7 @@ def image_to_c_array_file(image_path, output_file):
     
     # Open output file
     with open(output_file, 'w') as file:
-        file.write(f"const short int Number_9[{height * width}] = {{\n")
+        file.write(f"const short int Number_[{height * width}] = {{\n")
         
         for y in range(height):
             for x in range(width):
