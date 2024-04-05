@@ -64,10 +64,17 @@ void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
     void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
+    void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
+    
     void draw_background();
+
     void spawn_knight();
+    bool hasVisibleKnights();
+    void draw_knights();
+    void erase_knights();
     void update_knights();
+    
     void draw_currency();
     void update_currency();
 void intializeSprites();
