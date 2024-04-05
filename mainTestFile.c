@@ -11,7 +11,6 @@ Last Updated: Mar. 24th, 2024
 #include "stdlib.h"
 #include "time.h"
 #include "string.h"
-
 /*************************************************************************************************************
 images.h - header file that contains every individual image used
 
@@ -934,7 +933,7 @@ void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
-    void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[]); 
+    void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
     void draw_background();
     void spawn_knight();
@@ -1064,17 +1063,17 @@ Knight oldKnightsList[MAX_KNIGHTS];
 Knight testdummy; // TESTING
 
 // Sprite Arrays
-unsigned short (*knightDefault[1])[19 * 15] = {Knight_Default};
-unsigned short (*knightWalking[6])[22 * 15] = {Knight_Walking1, Knight_Walking2, Knight_Walking3, Knight_Walking4, Knight_Walking5, Knight_Walking6};
-unsigned short (*knightAttacking[3])[19 * 27] = {Knight_Attacking1, Knight_Attacking2, Knight_Attacking3};
+unsigned short *knightDefault[1] = {Knight_Default};
+unsigned short *knightWalking[6] = {Knight_Walking1, Knight_Walking2, Knight_Walking3, Knight_Walking4, Knight_Walking5, Knight_Walking6};
+unsigned short *knightAttacking[3] = {Knight_Attacking1, Knight_Attacking2, Knight_Attacking3};
 
 
-unsigned short (*e_knightDefault[1])[19 * 15] = {Enemy_Knight_Default};
-unsigned short (*e_knightWalking[6])[22 * 15] = {Enemy_Knight_Walking1, Enemy_Knight_Walking2, Enemy_Knight_Walking3, Enemy_Knight_Walking4, Enemy_Knight_Walking5, Enemy_Knight_Walking6};
-unsigned short (*e_knightAttacking[3])[19 * 27] = {Enemy_Knight_Attacking1, Enemy_Knight_Attacking2, Enemy_Knight_Attacking3};
+unsigned short *e_knightDefault[1] = {Enemy_Knight_Default};
+unsigned short *e_knightWalking[6] = {Enemy_Knight_Walking1, Enemy_Knight_Walking2, Enemy_Knight_Walking3, Enemy_Knight_Walking4, Enemy_Knight_Walking5, Enemy_Knight_Walking6};
+unsigned short *e_knightAttacking[3] = {Enemy_Knight_Attacking1, Enemy_Knight_Attacking2, Enemy_Knight_Attacking3};
 
 
-unsigned short (*numberImages[10])[10 * 6] = {Number_0, Number_1, Number_2, Number_3, Number_4, Number_5, Number_6, Number_7, Number_8, Number_9};
+unsigned short *numberImages[10] = {Number_0, Number_1, Number_2, Number_3, Number_4, Number_5, Number_6, Number_7, Number_8, Number_9};
 
 
 
@@ -1360,7 +1359,7 @@ void draw(){
 }
 
 
-void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[]) {
+void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite) {
     int sxi, syi; // sprite pixel position
     int xi, yi;   // current pixel being drawn
 	
@@ -1369,8 +1368,10 @@ void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[
 		   xi = x + sxi;
 		   yi = y + syi;
      	   
-           // draw the sprite (excluding transparent colour)
-           if(sprite[syi * width + sxi] != TRANSPARENT) plot_pixel(xi, yi, sprite[syi * width + sxi]);
+           int index = syi * width + sxi;
+           if(sprite[index] != TRANSPARENT)
+                plot_pixel(xi, yi, sprite[index]);
+           
 	    }
     }
 }
@@ -1382,7 +1383,6 @@ void draw_background(){
             plot_pixel(x, y, game_background[y * vgaWidth + x]);
         }
     }
-
 }
 
 
