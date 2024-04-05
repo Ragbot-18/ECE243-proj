@@ -13,15 +13,14 @@ def image_to_c_array_file(image_path, output_file):
     
     # Open output file
     with open(output_file, 'w') as file:
-        file.write(f"uint16_t image_bitmap[{height}][{width}] = {{\n")
+        file.write(f"const short int Number_9[{height * width}] = {{\n")
         
         for y in range(height):
-            file.write("    {")
             for x in range(width):
                 r, g, b = pixels[y][x]
                 color_16bit = rgb_to_16bit(r, g, b)
                 file.write(f"0x{color_16bit:04X}, ")
-            file.write("},\n")
+            file.write("\n")
         
         file.write("};\n")
 

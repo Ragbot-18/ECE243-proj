@@ -63,7 +63,7 @@ void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
-    void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[][width]); 
+    void draw_sprite(int x, int y, int width, int height, unsigned short int sprite[]); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
     void draw_background();
     void spawn_knight();
@@ -112,7 +112,7 @@ typedef struct Knight {
     int hitbox; // this is the right hand hitbox of the knight (xpos + width)
     int detectionRange; // this is the range past the hitbox that the knight will be scanning for entities
     spriteState state;
-    unsigned short (*image)[22][15];
+    unsigned short *image;
     int currentImage;
     bool isVisible;
 
