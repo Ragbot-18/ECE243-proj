@@ -946,6 +946,7 @@ void timer_ISR(void);
 void init_timer_interrupt(void);
 void init_PS2_interrupt(void);
 void PS2_ISR(void);
+void check_key_press();
 
 /*************************************************************************************************************/
 
@@ -1268,7 +1269,7 @@ int main(){
         //     key_buffer[key_buffer_count-1] = 0;
         //     key_buffer_count--;
         // }
-
+		check_key_press();
         /* Erase any boxes and lines that were drawn in the last iteration */
         //draw(x_box, y_box, dx, dy, boxcolour);
         draw();
@@ -1586,41 +1587,63 @@ instead of regular memory loads and stores) */
     // PS/2 mouse needs to be reset (must be already plugged in)
     //  *(PS2_ptr) = 0xFF; // reset
     do // loop while RVALID is 1
-    {
+    {   
         PS2_data = *(PS2_ptr);      // read the Data register in the PS/2 port
         RVALID = PS2_data & 0x8000; // extract the RVALID field
         RAVAIL = (PS2_data & 0xFFFF0000)>>16; // extract the RAVAIL field
         if (RVALID)
-        {
+        {   
             KeyData = PS2_data & 0xFF; // get the keycode
-            // if(key_buffer_count < KEY_BUFFER_SIZE){
-            //     key_buffer[key_buffer_count+1] = KeyData;
-            //     key_buffer_count++;
-            // }
-            // else{
-            //     key_buffer_count = 0;
-            //     key_buffer[key_buffer_count+1] = KeyData;
-            // }
-            if(currentGameState == Intro){
-              if(KeyData == 0x5A){ // ENTER key
-                currentGameState = Game;
-				printf("Hello there, new to gamee?? \n");
-                break;
-              }
+            if(key_buffer_count < KEY_BUFFER_SIZE){
+                key_buffer[key_buffer_count] = KeyData;
+                key_buffer_count++;
             }
-            else if(currentGameState == Game){
-              if(KeyData == 0x16){ // 1 key
-                spawn_knight();
-                printf("Spawned Knight\n");
-                break;
-              }
+            else{
+                key_buffer_count = 0;
+                key_buffer[key_buffer_count] = KeyData;
+                key_buffer_count++;
             }
         }
     }
     while(RAVAIL > 0);
+    
     return;
 }
 
+void check_key_press(){
+    int valid_input = 0;
+    printf("A ");
+    for (int i = key_buffer_count-1; i>=0; i--, key_buffer_count--){
+        char check = 0xF0;
+        if( i>0  && key_buffer[i-1] == check){      
+            valid_input = 1;
+        }
+        else{
+            valid_input = 0;
+        }
+        if(valid_input == 1){
+            if(currentGameState == Intro){
+                if(key_buffer[i] == 0x5A){ // ENTER key
+                    currentGameState = Game;
+                    printf("Hello there, new to gamee?? \n");
+                }
+            }
+            else if(currentGameState == Game){
+                if(key_buffer[i] == 0x16){ // 1 key
+                    if(currency >= 10){
+                        currency -= 10;
+                        spawn_knight();
+                        printf("Spawned Knight\n");
+                    }
+                    else{
+                        printf("Not enough currency\n");
+                    }
+                }
+            }
+        }
+    }
+	return;
+}
 
 void init_timer_interrupt(void){
     volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
