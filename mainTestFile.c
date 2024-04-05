@@ -934,10 +934,17 @@ void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
     void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
+    void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
+    
     void draw_background();
+
     void spawn_knight();
+    bool hasVisibleKnights();
+    void draw_knights();
+    void erase_knights();
     void update_knights();
+    
     void draw_currency();
     void update_currency();
 void intializeSprites();
@@ -1044,7 +1051,8 @@ typedef struct Projectile {
 // Local Global Variables
 struct fb_t { unsigned short volatile  pixels[256][512]; };
 struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
-gameState currentGameState = Intro;
+gameState currentGameState;
+const unsigned short int* current_background;
 
 time_t start_time;
 time_t last_currency_update; 
@@ -1241,6 +1249,9 @@ int main(){
     
 
     // Initial setup for the game
+    gameState currentGameState = Intro;
+    current_background = game_background;
+
     intializeSprites();
     spawn_knight(); //TESTING - will link this with appropriate keyboard press within Game case below
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
@@ -1340,8 +1351,8 @@ void intializeSprites(){
 
 void draw(){
     //first erase old objects
-    clear_screen();  // get rid of this later
-    //erase_knights();
+    //clear_screen();  // get rid of this later
+    erase_knights();
 
 
     //draw objects 
@@ -1377,10 +1388,27 @@ void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite
 }
 
 
+void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite) {
+    int sxi, syi; // sprite pixel position
+    int xi, yi;   // current pixel being drawn
+	
+	for (sxi = 0; sxi < width; sxi++){
+		for (syi = 0; syi < height; syi++) {
+		   xi = x + sxi;
+		   yi = y + syi;
+     	   
+           int index = syi * width + sxi;
+           if(sprite[index] != TRANSPARENT)
+                plot_pixel(xi, yi, current_background[index]);
+           
+	    }
+    }
+}
+
 void draw_background(){
     for (int x = 0; x < vgaWidth; x++){
         for (int y = 0; y < vgaHeight; y++){
-            plot_pixel(x, y, game_background[y * vgaWidth + x]);
+            plot_pixel(x, y, current_background[y * vgaWidth + x]);
         }
     }
 }
@@ -1400,10 +1428,26 @@ void spawn_knight(){
 }
 
 
+bool hasVisibleKnights() {
+    for (int i = 0; i < MAX_KNIGHTS; i++) {
+        if (knightList[i].isVisible) {
+            return true; 
+        }
+    }
+    return false; // No visible knights found
+}
+
+
 void erase_knights(){
-
-
-
+    if (hasVisibleKnights){
+        for (int i = 0; i < MAX_KNIGHTS; i++){
+            if (knightList[i].isVisible){
+                erase_sprite(oldKnightsList[i].xpos, oldKnightsList[i].ypos, oldKnightsList[i].width, oldKnightsList[i].height, oldKnightsList[i].image);
+            }
+        }
+    }
+    
+        
 }
 
 
@@ -1413,7 +1457,9 @@ void update_knights(){
     // update x and y position as well as currentState 
     for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
         // Only update visible/spawned in knights
-        if (knightList[i].isVisible) { 
+        if (knightList[i].isVisible) {
+            oldKnightsList[i] = knightList[i]; // save the old position to erase
+
         // 1. Update variables depending on the current state
             // if just spawned in, update to walking state
             if (knightList[i].state == Default && knightList[i].xpos == USER_TOWER_X) {
