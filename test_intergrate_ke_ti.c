@@ -909,6 +909,7 @@ volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
 volatile int key_buffer_count = 0; //counter for the key buffer;
 int g = 10; // gravity
 
+int enemy_tower_health = 100;
 
 /*************************************************************************************************************/
 
@@ -947,6 +948,7 @@ void init_timer_interrupt(void);
 void init_PS2_interrupt(void);
 void PS2_ISR(void);
 void check_key_press();
+void draw_box(int x, int y, int width, int height, short int color);
 
 /*************************************************************************************************************/
 
@@ -977,6 +979,7 @@ typedef struct Knight {
     int width;
     int height;
     int health;
+    int damage;
     int hitbox; // this is the right hand hitbox of the knight (xpos + width)
     int detectionRange; // this is the range past the hitbox that the knight will be scanning for entities
     spriteState state;
@@ -1358,9 +1361,9 @@ void draw(){
     draw_currency(20, 190);
     // draw_sprite(testdummy.xpos, testdummy.ypos, testdummy.width, testdummy.height, *knightWalking[0]); // TESTING (this works)
     draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); 
-
-
-
+    
+    draw_box(20, 100, 20, 20, 0x0); // TESTING - will replace with draw_currency later
+    draw_box(22, 102, 16, 16, 0x0bc1); // TESTING - will replace with draw_currency later
     //update everything 
     update_currency();
     update_knights();
@@ -1672,6 +1675,16 @@ void timer_ISR(){
     printf("Timer Count: %d\n", timer_count);
     printf("Currency: %d\n", currency);
     return;
+}
+
+void draw_box(int x, int y, int height, int width, short int box_colour){
+    // draw a rectangle
+    
+    for(int i = x-(width/2); i<x+(width-width/2); i++){
+        for(int j = y-(height/2); j<y+(height-height/2); j++){
+            plot_pixel(i, j, box_colour);
+        }
+    }
 }
 
 /*************************************************************************************************************/
