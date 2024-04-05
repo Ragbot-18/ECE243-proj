@@ -7,40 +7,7 @@ Last Updated: Mar. 24th, 2024
 
 #include "global.h"
 
-#define MAX_KNIGHTS 20
 
-#define USER_TOWER_X 35
-#define USER_TOWER_X_EDGE 55
-#define USER_TOWER_Y 160
-#define ENEMY_TOWER_X 285
-#define ENEMY_TOWER_X_EDGE 265
-#define ENEMY_TOWER_Y 160
-
-#define KNIGHT_DEFAULT_WIDTH 15
-#define KNIGHT_DEFAULT_HEIGHT 19
-#define KNIGHT_WALKING_WIDTH 15
-#define KNIGHT_WALKING_HEIGHT 22
-#define KNIGHT_ATTACKING_WIDTH 27
-#define KNIGHT_ATTACKING_HEIGHT 19
-
-#define DIGIT_WIDTH 6
-#define DIGIT_HEIGHT 10
-
-// Local Global Variables
-struct fb_t { unsigned short volatile  pixels[256][512]; };
-struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
-gameState currentGameState;
-const unsigned short int* current_background;
-
-time_t start_time;
-time_t last_currency_update; 
-int currency = 0;
-
-volatile int pixel_buffer_start;  // global variable for the pixel buffer
-short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
-short int Buffer2[240][512];
-int vgaWidth = 320;               // vga dimensions
-int vgaHeight = 240;
 
 // Sprites 
 Knight knightList[MAX_KNIGHTS]; 
@@ -65,7 +32,7 @@ unsigned short *numberImages[10] = {Number_0, Number_1, Number_2, Number_3, Numb
 
 
 /*************************************************************************************************************/
-//--------------------------------------------- PROLOGUE FUNCTION-------------------------------------------------//
+//---------------------------------------------PROLOGUE FUNCTION---------------------------------------------//
 /* The assembly language code below handles CPU reset processing */
 void the_reset(void) __attribute__((section(".reset")));
 void the_reset(void)
@@ -203,15 +170,6 @@ int main(){
     init_timer_interrupt();
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
 
-
-    //TESTING
-    
-    // testdummy.xpos = 35;
-    // testdummy.ypos = 160;
-    // testdummy.width = 15;
-    // testdummy.height = 22;
-
-
     // VGA SETUP
         /* 1. set front pixel buffer to Buffer 1 */
         *(pixel_ctrl_ptr + 1) = (int)&Buffer1;  // first store the address in the back buffer
@@ -235,27 +193,18 @@ int main(){
     spawn_knight(); //TESTING - will link this with appropriate keyboard press within Game case below
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
 
-    time(&start_time); // This captures the current time as the start time (NEED TO MOVE THIS INTO GAME STATE EVENTUALLY)
-    printf("Start Time: %ld\n", start_time);
-    last_currency_update = start_time;
-    update_currency();
+    start_time = 0;
+    current_time = start_time;
+    currency = 0;
+    last_currency_update = start_time; 
+
 
     while (1) {
-        // while(key_buffer_count!=0){
-        //     char data = key_buffer[key_buffer_count-1];
-        //     volatile int* LEDS = (volatile int*) 0xff200000;
-        //     *(LEDS) = data;
-        //     key_buffer[key_buffer_count-1] = 0;
-        //     key_buffer_count--;
-        // }
+        check_key_press();
+        draw();        // TESTING - move this into the Game case below
 
-        /* Erase any boxes and lines that were drawn in the last iteration */
-        //draw(x_box, y_box, dx, dy, boxcolour);
-        draw();
-        // code for drawing the boxes and lines (not shown)
-        // code for updating the locations of boxes (not shown)
-        
-        
+        // INTRO - draw intro background, wait until certain key is pressed
+        // GAME - regular draw function
 
         // NEED TO DO: create switch case statements for different parts of the game + integrate keyboard usage
         switch (currentGameState){
@@ -333,15 +282,14 @@ void draw(){
 
 
     //draw objects 
-    draw_background();
+    draw_background(); // maybe move this out of the draw function so it isnt being called every time --> will need to erase hp and currency though
     draw_currency(20, 190);
-    // draw_sprite(testdummy.xpos, testdummy.ypos, testdummy.width, testdummy.height, *knightWalking[0]); // TESTING (this works)
-    draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); 
 
+    // draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); // MANUAL TESTING -- WORKS
+    draw_knights();
 
 
     //update everything 
-    update_currency();
     update_knights();
 
 }
@@ -392,6 +340,8 @@ void draw_background(){
 
 
 void spawn_knight(){
+    // Subtract the cost of the knight
+    currency -= 10; 
     // Find the next knight in the array and 'spawn' him in
     for (int i = 0; i < MAX_KNIGHTS - 1; i++){
         if (knightList[i].isVisible == false){
@@ -412,6 +362,15 @@ bool hasVisibleKnights() {
         }
     }
     return false; // No visible knights found
+}
+
+
+void draw_knights(){
+    for (int i = 0; i < MAX_KNIGHTS; i++){
+        if (knightList[i].isVisible){
+            draw_sprite(knightList[i].xpos, knightList[i].ypos, knightList[i].width, knightList[i].height, knightList[i].image);
+        }
+    }
 }
 
 
@@ -478,57 +437,37 @@ void update_knights(){
 }
 
 
-void update_currency() {
-    // printf("Currency: %d\n", currency);
-    // time_t current_time;
-    // current_time = time(NULL); 
-    
-    // printf("Present Time: %ld, Currency: %d\n", current_time, currency);
-    // double elapsed_seconds_since_last_update = difftime(current_time, last_currency_update);
-    // printf("elapsed time since last update: %f\n", elapsed_seconds_since_last_update);
-    
-    // // Increment currency every 2 seconds
-    // if (elapsed_seconds_since_last_update >= 2) {
-    //     currency += 5; // Increase currency by 5 every 2 seconds
-    //     printf("2 seconds passed -> Currency: %d\n", currency);
-    //     last_currency_update = current_time; // Reset last update time
-    //     printf("elapsed time since last update: %f\n", difftime(current_time, last_currency_update));
-    // }
-    // printf("AFTER: %f, Currency: %d\n", difftime(current_time, last_currency_update), currency);
-}
-
-
 
 void draw_currency(int x, int y) {
-    // int temp_currency = currency;
-    // int digit_width_with_spacing = DIGIT_WIDTH + 2; // Assuming 2 pixel space between digits for clarity
+    int temp_currency = currency;
+    int digit_width_with_spacing = DIGIT_WIDTH + 2; // Assuming 2 pixel space between digits for clarity
 
-    // // If currency is 0, directly draw the '0' digit
-    // if (temp_currency == 0) {
-    //     draw_sprite(x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[0]);
-    //     return;
-    // }
+    // If currency is 0, directly draw the '0' digit
+    if (temp_currency == 0) {
+        draw_sprite(x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[0]);
+        return;
+    }
 
-    // // Calculate the number of digits in the currency to adjust starting x position
-    // int num_digits = 0;
-    // for (int temp = temp_currency; temp > 0; temp /= 10) {
-    //     num_digits++;
-    // }
+    // Calculate the number of digits in the currency to adjust starting x position
+    int num_digits = 0;
+    for (int temp = temp_currency; temp > 0; temp /= 10) {
+        num_digits++;
+    }
     
-    // // Adjust the starting x position based on the number of digits to draw from left to right
-    // int adjusted_x = x + (num_digits - 1) * digit_width_with_spacing;
+    // Adjust the starting x position based on the number of digits to draw from left to right
+    int adjusted_x = x + (num_digits - 1) * digit_width_with_spacing;
     
-    // while (temp_currency > 0) {
-    //     int digit = temp_currency % 10; // Extract the rightmost digit
-    //     temp_currency /= 10; // Remove the rightmost digit
+    while (temp_currency > 0) {
+        int digit = temp_currency % 10; // Extract the rightmost digit
+        temp_currency /= 10; // Remove the rightmost digit
         
-    //     // Draw the current digit
-    //     // Note: numberImages array is indexed correctly with 0 being the first element
-    //     draw_sprite(adjusted_x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[digit]);
+        // Draw the current digit
+        // Note: numberImages array is indexed correctly with 0 being the first element
+        draw_sprite(adjusted_x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[digit]);
         
-    //     // Move to the next position on the left
-    //     adjusted_x -= digit_width_with_spacing;
-    // }
+        // Move to the next position on the left
+        adjusted_x -= digit_width_with_spacing;
+    }
 }
 
 /*******************************************************************************
@@ -566,38 +505,62 @@ instead of regular memory loads and stores) */
     // PS/2 mouse needs to be reset (must be already plugged in)
     //  *(PS2_ptr) = 0xFF; // reset
     do // loop while RVALID is 1
-    {
+    {   
         PS2_data = *(PS2_ptr);      // read the Data register in the PS/2 port
         RVALID = PS2_data & 0x8000; // extract the RVALID field
         RAVAIL = (PS2_data & 0xFFFF0000)>>16; // extract the RAVAIL field
         if (RVALID)
-        {
+        {   
             KeyData = PS2_data & 0xFF; // get the keycode
-            // if(key_buffer_count < KEY_BUFFER_SIZE){
-            //     key_buffer[key_buffer_count+1] = KeyData;
-            //     key_buffer_count++;
-            // }
-            // else{
-            //     key_buffer_count = 0;
-            //     key_buffer[key_buffer_count+1] = KeyData;
-            // }
-            if(currentGameState == Intro){
-              if(KeyData == 0x5A){ // ENTER key
-                currentGameState = Game;
-                break;
-              }
+            if(key_buffer_count < KEY_BUFFER_SIZE){
+                key_buffer[key_buffer_count] = KeyData;
+                key_buffer_count++;
             }
-            else if(currentGameState == Game){
-              if(KeyData == 0x16){ // 1 key
-                spawn_knight();
-                printf("Spawned Knight\n");
-                break;
-              }
+            else{
+                key_buffer_count = 0;
+                key_buffer[key_buffer_count] = KeyData;
+                key_buffer_count++;
             }
         }
     }
     while(RAVAIL > 0);
+    
     return;
+}
+
+
+void check_key_press(){
+    int valid_input = 0;
+    for (int i = key_buffer_count-1; i>=0; i--, key_buffer_count--){
+        char check = 0xF0;
+        if( i>0  && key_buffer[i-1] == check){      
+            valid_input = 1;
+        }
+        else{
+            valid_input = 0;
+        }
+        if(valid_input == 1){
+            if(currentGameState == Intro){
+                if(key_buffer[i] == 0x5A){ // ENTER key
+                    currentGameState = Game;
+                    printf("Hello there, new to gamee?? \n");
+                }
+            }
+            else if(currentGameState == Game){
+                if(key_buffer[i] == 0x16){ // 1 key
+                    if(currency >= 10){
+                        currency -= 10;
+                        spawn_knight();
+                        printf("Spawned Knight\n");
+                    }
+                    else{
+                        printf("Not enough currency\n");
+                    }
+                }
+            }
+        }
+    }
+	return;
 }
 
 
@@ -622,10 +585,10 @@ void init_timer_interrupt(void){
 
 void timer_ISR(){
     volatile int *timer_ptr = (int *)0xFF202000; // timer base address
-    *(timer_ptr) = *(timer_ptr)|0x0; // clear the interrupt
-    timer_count++;
+    *(timer_ptr) = 0; // clear the interrupt
+    current_time++;
     currency++;
-    printf("Timer Count: %d\n", timer_count);
+    printf("Timer Count: %d\n", current_time);
     printf("Currency: %d\n", currency);
     return;
 }

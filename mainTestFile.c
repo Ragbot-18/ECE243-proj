@@ -9,7 +9,6 @@ Last Updated: Mar. 24th, 2024
 #include "stdio.h"
 #include "stdbool.h"
 #include "stdlib.h"
-#include "time.h"
 #include "string.h"
 /*************************************************************************************************************
 images.h - header file that contains every individual image used
@@ -885,8 +884,12 @@ const unsigned short int Number_9[10 * 6] = {
 
 /*************************************************************************************************************/
 
-//#include "nios2_ctrl_reg_macros.h"
 
+/*************************************************************************************************************/
+//GLOBAL DEFINITIONS
+#define KEY_BUFFER_SIZE 64
+
+//#include "nios2_ctrl_reg_macros.h"
 #define NIOS2_READ_STATUS(dest) \
     do { dest = __builtin_rdctl(0); } while (0)
 #define NIOS2_WRITE_STATUS(src) \
@@ -904,26 +907,28 @@ const unsigned short int Number_9[10 * 6] = {
 #define NIOS2_READ_CPUID(dest) \
     do { dest = __builtin_rdctl(5); } while (0)
 
-/*************************************************************************************************************/
-//GLOBAL DEFINATIONS
-#define KEY_BUFFER_SIZE 64
+// Game Related Definitions
+#define MAX_KNIGHTS 20
+
+#define USER_TOWER_X 35
+#define USER_TOWER_X_EDGE 55
+#define USER_TOWER_Y 160
+#define ENEMY_TOWER_X 285
+#define ENEMY_TOWER_X_EDGE 265
+#define ENEMY_TOWER_Y 160
+
+#define KNIGHT_DEFAULT_WIDTH 15
+#define KNIGHT_DEFAULT_HEIGHT 19
+#define KNIGHT_WALKING_WIDTH 15
+#define KNIGHT_WALKING_HEIGHT 22
+#define KNIGHT_ATTACKING_WIDTH 27
+#define KNIGHT_ATTACKING_HEIGHT 19
+
+#define DIGIT_WIDTH 6
+#define DIGIT_HEIGHT 10
+
 
 /*************************************************************************************************************/
-
-/*************************************************************************************************************/
-//GLOBAL VARIABLES
-
-
-
-volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
-volatile int key_buffer_count = 0; //counter for the key buffer;
-int g = 10; // gravity
-
-
-/*************************************************************************************************************/
-
-
-
 
 /*************************************************************************************************************/
 //FUNCTION HEADERS
@@ -946,20 +951,19 @@ void draw();
     void update_knights();
     
     void draw_currency();
-    void update_currency();
 void intializeSprites();
 //void draw();
     //void update_positions --> have different parts of code to update different types of characters
 
 void update_game();
 
+void check_key_press();
+void timer_ISR(void);
+void init_timer_interrupt(void);
 void init_PS2_interrupt(void);
 void PS2_ISR(void);
-void interval_timer_ISR();
 
 /*************************************************************************************************************/
-
-
 
 /*************************************************************************************************************/
 //TYPEDEF STRUCTS
@@ -1029,40 +1033,33 @@ typedef struct Projectile {
 
 /*************************************************************************************************************/
 
-#define MAX_KNIGHTS 20
+/*************************************************************************************************************/
+//GLOBAL VARIABLES
 
-#define USER_TOWER_X 35
-#define USER_TOWER_X_EDGE 55
-#define USER_TOWER_Y 160
-#define ENEMY_TOWER_X 285
-#define ENEMY_TOWER_X_EDGE 265
-#define ENEMY_TOWER_Y 160
+// volatile int timer_count = 0;
 
-#define KNIGHT_DEFAULT_WIDTH 15
-#define KNIGHT_DEFAULT_HEIGHT 19
-#define KNIGHT_WALKING_WIDTH 15
-#define KNIGHT_WALKING_HEIGHT 22
-#define KNIGHT_ATTACKING_WIDTH 27
-#define KNIGHT_ATTACKING_HEIGHT 19
+volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
+volatile int key_buffer_count = 0; //counter for the key buffer;
+int g = 10; // gravity
 
-#define DIGIT_WIDTH 6
-#define DIGIT_HEIGHT 10
-
-// Local Global Variables
 struct fb_t { unsigned short volatile  pixels[256][512]; };
 struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
 gameState currentGameState;
 const unsigned short int* current_background;
 
-time_t start_time;
-time_t last_currency_update; 
-int currency = 0;
+int start_time;
+int last_currency_update; 
+int currency;
+int current_time;
 
 volatile int pixel_buffer_start;  // global variable for the pixel buffer
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
 int vgaWidth = 320;               // vga dimensions
 int vgaHeight = 240;
+/*************************************************************************************************************/
+
+
 
 // Sprites 
 Knight knightList[MAX_KNIGHTS]; 
@@ -1087,7 +1084,7 @@ unsigned short *numberImages[10] = {Number_0, Number_1, Number_2, Number_3, Numb
 
 
 /*************************************************************************************************************/
-//--------------------------------------------- PROLOGUE FUNCTION-------------------------------------------------//
+//---------------------------------------------PROLOGUE FUNCTION---------------------------------------------//
 /* The assembly language code below handles CPU reset processing */
 void the_reset(void) __attribute__((section(".reset")));
 void the_reset(void)
@@ -1211,7 +1208,7 @@ void interrupt_handler(void)
     }
     if (ipending & 0x1) // interval timer is interrupt level 0
     {
-    interval_timer_ISR();
+        timer_ISR();
     }
     // else, ignore the interrupt
     return;
@@ -1222,16 +1219,8 @@ void interrupt_handler(void)
 //---------------------------------------------MAIN FUNCTION-------------------------------------------------//
 int main(){
     init_PS2_interrupt();
+    init_timer_interrupt();
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
-
-
-    //TESTING
-    
-    // testdummy.xpos = 35;
-    // testdummy.ypos = 160;
-    // testdummy.width = 15;
-    // testdummy.height = 22;
-
 
     // VGA SETUP
         /* 1. set front pixel buffer to Buffer 1 */
@@ -1256,37 +1245,26 @@ int main(){
     spawn_knight(); //TESTING - will link this with appropriate keyboard press within Game case below
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
 
-    time(&start_time); // This captures the current time as the start time (NEED TO MOVE THIS INTO GAME STATE EVENTUALLY)
-    printf("Start Time: %ld\n", start_time);
-    last_currency_update = start_time;
-    update_currency();
+    start_time = 0;
+    current_time = start_time;
+    currency = 0;
+    last_currency_update = start_time; 
+
 
     while (1) {
-        while(key_buffer_count!=0){
-            char data = key_buffer[key_buffer_count-1];
-            volatile int* LEDS = (volatile int*) 0xff200000;
-            *(LEDS) = data;
-            key_buffer[key_buffer_count-1] = 0;
-            key_buffer_count--;
-        }
-        /* Erase any boxes and lines that were drawn in the last iteration */
-        //draw(x_box, y_box, dx, dy, boxcolour);
-        draw();
-        // code for drawing the boxes and lines (not shown)
-        // code for updating the locations of boxes (not shown)
-        
-        
+        check_key_press();
+        draw();        // TESTING - move this into the Game case below
+
+        // INTRO - draw intro background, wait until certain key is pressed
+        // GAME - regular draw function
 
         // NEED TO DO: create switch case statements for different parts of the game + integrate keyboard usage
         switch (currentGameState){
             case Intro:
                 /* code */ 
                 // wait for certain key to be pressed then switch to game state and start the game (maybe add instructions page?)
-                break;
-            
             case Game:
                 /* code */
-                break;
         
         default:
             break;
@@ -1356,15 +1334,14 @@ void draw(){
 
 
     //draw objects 
-    draw_background();
+    draw_background(); // maybe move this out of the draw function so it isnt being called every time --> will need to erase hp and currency though
     draw_currency(20, 190);
-    // draw_sprite(testdummy.xpos, testdummy.ypos, testdummy.width, testdummy.height, *knightWalking[0]); // TESTING (this works)
-    draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); 
 
+    // draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); // MANUAL TESTING -- WORKS
+    draw_knights();
 
 
     //update everything 
-    update_currency();
     update_knights();
 
 }
@@ -1415,6 +1392,8 @@ void draw_background(){
 
 
 void spawn_knight(){
+    // Subtract the cost of the knight
+    currency -= 10; 
     // Find the next knight in the array and 'spawn' him in
     for (int i = 0; i < MAX_KNIGHTS - 1; i++){
         if (knightList[i].isVisible == false){
@@ -1435,6 +1414,15 @@ bool hasVisibleKnights() {
         }
     }
     return false; // No visible knights found
+}
+
+
+void draw_knights(){
+    for (int i = 0; i < MAX_KNIGHTS; i++){
+        if (knightList[i].isVisible){
+            draw_sprite(knightList[i].xpos, knightList[i].ypos, knightList[i].width, knightList[i].height, knightList[i].image);
+        }
+    }
 }
 
 
@@ -1498,26 +1486,6 @@ void update_knights(){
             knightList[i].hitbox = knightList[i].xpos + knightList[i].width;
         }
     }
-}
-
-
-void update_currency() {
-    printf("Currency: %d\n", currency);
-    time_t current_time;
-    current_time = time(NULL); 
-    
-    printf("Present Time: %ld, Currency: %d\n", current_time, currency);
-    double elapsed_seconds_since_last_update = difftime(current_time, last_currency_update);
-    printf("elapsed time since last update: %f\n", elapsed_seconds_since_last_update);
-    
-    // Increment currency every 2 seconds
-    if (elapsed_seconds_since_last_update >= 2) {
-        currency += 5; // Increase currency by 5 every 2 seconds
-        printf("2 seconds passed -> Currency: %d\n", currency);
-        last_currency_update = current_time; // Reset last update time
-        printf("elapsed time since last update: %f\n", difftime(current_time, last_currency_update));
-    }
-    printf("AFTER: %f, Currency: %d\n", difftime(current_time, last_currency_update), currency);
 }
 
 
@@ -1589,37 +1557,94 @@ instead of regular memory loads and stores) */
     // PS/2 mouse needs to be reset (must be already plugged in)
     //  *(PS2_ptr) = 0xFF; // reset
     do // loop while RVALID is 1
-    {
+    {   
         PS2_data = *(PS2_ptr);      // read the Data register in the PS/2 port
         RVALID = PS2_data & 0x8000; // extract the RVALID field
         RAVAIL = (PS2_data & 0xFFFF0000)>>16; // extract the RAVAIL field
         if (RVALID)
-        {
+        {   
             KeyData = PS2_data & 0xFF; // get the keycode
-            if(key_buffer_count < 64){
-                key_buffer[key_buffer_count+1] = KeyData;
+            if(key_buffer_count < KEY_BUFFER_SIZE){
+                key_buffer[key_buffer_count] = KeyData;
                 key_buffer_count++;
             }
             else{
                 key_buffer_count = 0;
-                key_buffer[key_buffer_count+1] = KeyData;
+                key_buffer[key_buffer_count] = KeyData;
+                key_buffer_count++;
             }
         }
     }
     while(RAVAIL > 0);
+    
     return;
 }
 
-void interval_timer_ISR() {
-    volatile int * interval_timer_ptr = (int *)0xFF202000;
 
-    
-    *(interval_timer_ptr) = 0; // clear the interrupt
-
-    
-return;
+void check_key_press(){
+    int valid_input = 0;
+    printf("A ");
+    for (int i = key_buffer_count-1; i>=0; i--, key_buffer_count--){
+        char check = 0xF0;
+        if( i>0  && key_buffer[i-1] == check){      
+            valid_input = 1;
+        }
+        else{
+            valid_input = 0;
+        }
+        if(valid_input == 1){
+            if(currentGameState == Intro){
+                if(key_buffer[i] == 0x5A){ // ENTER key
+                    currentGameState = Game;
+                    printf("Hello there, new to gamee?? \n");
+                }
+            }
+            else if(currentGameState == Game){
+                if(key_buffer[i] == 0x16){ // 1 key
+                    if(currency >= 10){
+                        currency -= 10;
+                        spawn_knight();
+                        printf("Spawned Knight\n");
+                    }
+                    else{
+                        printf("Not enough currency\n");
+                    }
+                }
+            }
+        }
+    }
+	return;
 }
 
+
+void init_timer_interrupt(void){
+    volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
+    *(timer_ptr + 1) = 0x8; // stop timer
+    int data = 0x5F5E100;
+    *(timer_ptr + 2) = data&0xFFFF; // write to control register to set the timer period
+    *(timer_ptr + 3) = data>>16; // start timer
+	    /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
+	int ctl3read;
+	NIOS2_READ_IENABLE(ctl3read);
+    NIOS2_WRITE_IENABLE(ctl3read|0b1);
+    int ctl0status;
+    NIOS2_READ_STATUS(ctl0status);
+    if( ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
+    else
+        NIOS2_WRITE_STATUS(1); // enable Nios II interrupts if they are currently disabled
+    *(timer_ptr + 1) = 0x7; // start timer
+    return;
+}
+
+void timer_ISR(){
+    volatile int *timer_ptr = (int *)0xFF202000; // timer base address
+    *(timer_ptr) = 0; // clear the interrupt
+    current_time++;
+    currency++;
+    printf("Timer Count: %d\n", current_time);
+    printf("Currency: %d\n", currency);
+    return;
+}
 
 /*************************************************************************************************************/
 
