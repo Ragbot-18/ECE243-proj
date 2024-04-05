@@ -189,7 +189,7 @@ void interrupt_handler(void)
     }
     if (ipending & 0x1) // interval timer is interrupt level 0
     {
-    interval_timer_ISR();
+        timer_ISR();
     }
     // else, ignore the interrupt
     return;
@@ -200,6 +200,7 @@ void interrupt_handler(void)
 //---------------------------------------------MAIN FUNCTION-------------------------------------------------//
 int main(){
     init_PS2_interrupt();
+    init_timer_interrupt();
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
 
 
@@ -240,13 +241,14 @@ int main(){
     update_currency();
 
     while (1) {
-        while(key_buffer_count!=0){
-            char data = key_buffer[key_buffer_count-1];
-            volatile int* LEDS = (volatile int*) 0xff200000;
-            *(LEDS) = data;
-            key_buffer[key_buffer_count-1] = 0;
-            key_buffer_count--;
-        }
+        // while(key_buffer_count!=0){
+        //     char data = key_buffer[key_buffer_count-1];
+        //     volatile int* LEDS = (volatile int*) 0xff200000;
+        //     *(LEDS) = data;
+        //     key_buffer[key_buffer_count-1] = 0;
+        //     key_buffer_count--;
+        // }
+
         /* Erase any boxes and lines that were drawn in the last iteration */
         //draw(x_box, y_box, dx, dy, boxcolour);
         draw();
@@ -260,11 +262,8 @@ int main(){
             case Intro:
                 /* code */ 
                 // wait for certain key to be pressed then switch to game state and start the game (maybe add instructions page?)
-                break;
-            
             case Game:
                 /* code */
-                break;
         
         default:
             break;
@@ -480,56 +479,56 @@ void update_knights(){
 
 
 void update_currency() {
-    printf("Currency: %d\n", currency);
-    time_t current_time;
-    current_time = time(NULL); 
+    // printf("Currency: %d\n", currency);
+    // time_t current_time;
+    // current_time = time(NULL); 
     
-    printf("Present Time: %ld, Currency: %d\n", current_time, currency);
-    double elapsed_seconds_since_last_update = difftime(current_time, last_currency_update);
-    printf("elapsed time since last update: %f\n", elapsed_seconds_since_last_update);
+    // printf("Present Time: %ld, Currency: %d\n", current_time, currency);
+    // double elapsed_seconds_since_last_update = difftime(current_time, last_currency_update);
+    // printf("elapsed time since last update: %f\n", elapsed_seconds_since_last_update);
     
-    // Increment currency every 2 seconds
-    if (elapsed_seconds_since_last_update >= 2) {
-        currency += 5; // Increase currency by 5 every 2 seconds
-        printf("2 seconds passed -> Currency: %d\n", currency);
-        last_currency_update = current_time; // Reset last update time
-        printf("elapsed time since last update: %f\n", difftime(current_time, last_currency_update));
-    }
-    printf("AFTER: %f, Currency: %d\n", difftime(current_time, last_currency_update), currency);
+    // // Increment currency every 2 seconds
+    // if (elapsed_seconds_since_last_update >= 2) {
+    //     currency += 5; // Increase currency by 5 every 2 seconds
+    //     printf("2 seconds passed -> Currency: %d\n", currency);
+    //     last_currency_update = current_time; // Reset last update time
+    //     printf("elapsed time since last update: %f\n", difftime(current_time, last_currency_update));
+    // }
+    // printf("AFTER: %f, Currency: %d\n", difftime(current_time, last_currency_update), currency);
 }
 
 
 
 void draw_currency(int x, int y) {
-    int temp_currency = currency;
-    int digit_width_with_spacing = DIGIT_WIDTH + 2; // Assuming 2 pixel space between digits for clarity
+    // int temp_currency = currency;
+    // int digit_width_with_spacing = DIGIT_WIDTH + 2; // Assuming 2 pixel space between digits for clarity
 
-    // If currency is 0, directly draw the '0' digit
-    if (temp_currency == 0) {
-        draw_sprite(x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[0]);
-        return;
-    }
+    // // If currency is 0, directly draw the '0' digit
+    // if (temp_currency == 0) {
+    //     draw_sprite(x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[0]);
+    //     return;
+    // }
 
-    // Calculate the number of digits in the currency to adjust starting x position
-    int num_digits = 0;
-    for (int temp = temp_currency; temp > 0; temp /= 10) {
-        num_digits++;
-    }
+    // // Calculate the number of digits in the currency to adjust starting x position
+    // int num_digits = 0;
+    // for (int temp = temp_currency; temp > 0; temp /= 10) {
+    //     num_digits++;
+    // }
     
-    // Adjust the starting x position based on the number of digits to draw from left to right
-    int adjusted_x = x + (num_digits - 1) * digit_width_with_spacing;
+    // // Adjust the starting x position based on the number of digits to draw from left to right
+    // int adjusted_x = x + (num_digits - 1) * digit_width_with_spacing;
     
-    while (temp_currency > 0) {
-        int digit = temp_currency % 10; // Extract the rightmost digit
-        temp_currency /= 10; // Remove the rightmost digit
+    // while (temp_currency > 0) {
+    //     int digit = temp_currency % 10; // Extract the rightmost digit
+    //     temp_currency /= 10; // Remove the rightmost digit
         
-        // Draw the current digit
-        // Note: numberImages array is indexed correctly with 0 being the first element
-        draw_sprite(adjusted_x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[digit]);
+    //     // Draw the current digit
+    //     // Note: numberImages array is indexed correctly with 0 being the first element
+    //     draw_sprite(adjusted_x, y, DIGIT_WIDTH, DIGIT_HEIGHT, numberImages[digit]);
         
-        // Move to the next position on the left
-        adjusted_x -= digit_width_with_spacing;
-    }
+    //     // Move to the next position on the left
+    //     adjusted_x -= digit_width_with_spacing;
+    // }
 }
 
 /*******************************************************************************
@@ -574,13 +573,26 @@ instead of regular memory loads and stores) */
         if (RVALID)
         {
             KeyData = PS2_data & 0xFF; // get the keycode
-            if(key_buffer_count < 64){
-                key_buffer[key_buffer_count+1] = KeyData;
-                key_buffer_count++;
+            // if(key_buffer_count < KEY_BUFFER_SIZE){
+            //     key_buffer[key_buffer_count+1] = KeyData;
+            //     key_buffer_count++;
+            // }
+            // else{
+            //     key_buffer_count = 0;
+            //     key_buffer[key_buffer_count+1] = KeyData;
+            // }
+            if(currentGameState == Intro){
+              if(KeyData == 0x5A){ // ENTER key
+                currentGameState = Game;
+                break;
+              }
             }
-            else{
-                key_buffer_count = 0;
-                key_buffer[key_buffer_count+1] = KeyData;
+            else if(currentGameState == Game){
+              if(KeyData == 0x16){ // 1 key
+                spawn_knight();
+                printf("Spawned Knight\n");
+                break;
+              }
             }
         }
     }
@@ -588,16 +600,35 @@ instead of regular memory loads and stores) */
     return;
 }
 
-void interval_timer_ISR() {
-    volatile int * interval_timer_ptr = (int *)0xFF202000;
 
-    
-    *(interval_timer_ptr) = 0; // clear the interrupt
-
-    
-return;
+void init_timer_interrupt(void){
+    volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
+    *(timer_ptr + 1) = 0x8; // stop timer
+    int data = 0x5F5E100;
+    *(timer_ptr + 2) = data&0xFFFF; // write to control register to set the timer period
+    *(timer_ptr + 3) = data>>16; // start timer
+	    /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
+	int ctl3read;
+	NIOS2_READ_IENABLE(ctl3read);
+    NIOS2_WRITE_IENABLE(ctl3read|0b1);
+    int ctl0status;
+    NIOS2_READ_STATUS(ctl0status);
+    if( ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
+    else
+        NIOS2_WRITE_STATUS(1); // enable Nios II interrupts if they are currently disabled
+    *(timer_ptr + 1) = 0x7; // start timer
+    return;
 }
 
+void timer_ISR(){
+    volatile int *timer_ptr = (int *)0xFF202000; // timer base address
+    *(timer_ptr) = *(timer_ptr)|0x0; // clear the interrupt
+    timer_count++;
+    currency++;
+    printf("Timer Count: %d\n", timer_count);
+    printf("Currency: %d\n", currency);
+    return;
+}
 
 /*************************************************************************************************************/
 

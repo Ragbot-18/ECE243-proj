@@ -58,7 +58,7 @@ instead of regular memory loads and stores) */
         if (RVALID)
         {
             KeyData = PS2_data & 0xFF; // get the keycode
-            if(key_buffer_count < 128){
+            if(key_buffer_count < KEY_BUFFER_SIZE){
                 key_buffer[key_buffer_count+1] = KeyData;
                 key_buffer_count++;
             }

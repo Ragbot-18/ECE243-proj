@@ -43,7 +43,7 @@ Last Updated: Mar. 24th, 2024
 /*************************************************************************************************************/
 //GLOBAL VARIABLES
 
-
+volatile int timer_count = 0;
 
 volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
 volatile int key_buffer_count = 0; //counter for the key buffer;
@@ -83,9 +83,10 @@ void intializeSprites();
 
 void update_game();
 
+void timer_ISR(void);
+void init_timer_interrupt(void);
 void init_PS2_interrupt(void);
 void PS2_ISR(void);
-void interval_timer_ISR();
 
 /*************************************************************************************************************/
 
