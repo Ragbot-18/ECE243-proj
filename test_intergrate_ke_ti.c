@@ -1362,8 +1362,8 @@ void draw(){
     // draw_sprite(testdummy.xpos, testdummy.ypos, testdummy.width, testdummy.height, *knightWalking[0]); // TESTING (this works)
     draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); 
     
-    draw_box(20, 100, 20, 20, 0x0); // TESTING - will replace with draw_currency later
-    draw_box(22, 102, 16, 16, 0x0bc1); // TESTING - will replace with draw_currency later
+    draw_box(35, 105, 8, 50, 0x0); // TESTING - will replace with draw_currency later
+    draw_box(35, 105, 6, 48, 0x0bc1); // TESTING - will replace with draw_currency later
     //update everything 
     update_currency();
     update_knights();
