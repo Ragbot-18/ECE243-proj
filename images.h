@@ -871,10 +871,7 @@ const unsigned short int Number_9[10 * 6] = {
 0xC8F9, 0xC8F9, 0xC8F9, 0xC8F9, 0x0000, 0x0000, 
 };
 
-
-// SMALL NUMBERS
-
-const short int small_Number0[5*3] = {
+const short int small_number_0[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
@@ -882,7 +879,7 @@ const short int small_Number0[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number1[5*3] = {
+const short int small_number_1[5*3] = {
 0xC8F9, 0x0000, 0xC8F9, 
 0xC8F9, 0x0000, 0xC8F9, 
 0xC8F9, 0x0000, 0xC8F9, 
@@ -890,7 +887,7 @@ const short int small_Number1[5*3] = {
 0xC8F9, 0x0000, 0xC8F9, 
 };
 
-const short int small_Number2[5*3] = {
+const short int small_number_2[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -898,7 +895,7 @@ const short int small_Number2[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number3[5*3] = {
+const short int small_number_3[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -906,7 +903,7 @@ const short int small_Number3[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number4[5*3] = {
+const short int small_number_4[5*3] = {
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -914,7 +911,7 @@ const short int small_Number4[5*3] = {
 0xC8F9, 0xC8F9, 0x0000, 
 };
 
-const short int small_Number5[5*3] = {
+const short int small_number_5[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0xC8F9, 
 0x0000, 0x0000, 0x0000, 
@@ -922,7 +919,7 @@ const short int small_Number5[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number6[5*3] = {
+const short int small_number_6[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0xC8F9, 
 0x0000, 0x0000, 0x0000, 
@@ -930,7 +927,7 @@ const short int small_Number6[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number7[5*3] = {
+const short int small_number_7[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
@@ -938,7 +935,7 @@ const short int small_Number7[5*3] = {
 0xC8F9, 0xC8F9, 0x0000, 
 };
 
-const short int small_Number8[5*3] = {
+const short int small_number_8[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -946,15 +943,13 @@ const short int small_Number8[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number9[5*3] = {
+const short int small_number_9[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
 };
-
-// SMALL PERCENTAGE SIGN
 
 const short int small_percentage[7*7] = {
 0xC8F9, 0x0000, 0xC8F9, 0xC8F9, 0xC8F9, 0xC8F9, 0x0000, 

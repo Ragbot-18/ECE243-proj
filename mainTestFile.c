@@ -1743,10 +1743,6 @@ void draw_knight_button(){
             draw_sprite(KNIGHT_BUTTON_X, KNIGHT_BUTTON_Y, KNIGHT_BUTTON_WIDTH, KNIGHT_BUTTON_HEIGHT, knightButton[2]);
         }
     }
-    
-    
-
-
 }
 
 void spawn_knight(){
@@ -1759,9 +1755,7 @@ void spawn_knight(){
             knightList[i].image = knightDefault[0];
             break;            
         }
-        
     }
-    
 }
 
 
