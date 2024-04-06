@@ -13,7 +13,8 @@ Last Updated: Mar. 24th, 2024
 Knight knightList[MAX_KNIGHTS]; 
 Knight oldKnightsList[MAX_KNIGHTS];
 
-Knight testdummy; // TESTING
+Knight enemyKnightsList[MAX_KNIGHTS];
+
 
 // Sprite Arrays
 unsigned short *knightDefault[1] = {Knight_Default};
@@ -27,7 +28,8 @@ unsigned short *e_knightAttacking[3] = {Enemy_Knight_Attacking1, Enemy_Knight_At
 
 
 unsigned short *numberImages[10] = {Number_0, Number_1, Number_2, Number_3, Number_4, Number_5, Number_6, Number_7, Number_8, Number_9};
-
+unsigned short *smallNumberImages[10] = {small_Number0, small_Number1, small_Number2, small_Number3, small_Number4, small_Number5, small_Number6, small_Number7, 8, small_Number9};
+unsigned short *knightButton[4] = {Knight_Button1, Knight_Button2, Knight_Button3, Knight_Button4};
 
 
 
@@ -187,12 +189,14 @@ int main(){
 
     // Initial setup for the game
     gameState currentGameState = Intro;
-    current_background = game_background;
+    current_background = game_background; // TESTING - set this intro background when made
 
     intializeSprites();
-    spawn_knight(); //TESTING - will link this with appropriate keyboard press within Game case below
+    // spawn_knight(); // TESTING 
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
 
+    knightButtonPressed = false;
+    spawnEnemyKnight = false;
     start_time = 0;
     current_time = start_time;
     currency = 0;
@@ -260,6 +264,7 @@ void clear_screen() {
 void intializeSprites(){
     // Initialize knights
     for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
+        // Initialize user knights
         knightList[i].xpos = USER_TOWER_X;
         knightList[i].dx = 0;
         knightList[i].ypos = USER_TOWER_Y;
@@ -272,18 +277,37 @@ void intializeSprites(){
         knightList[i].image = knightDefault[0];
         knightList[i].currentImage = 0;
         knightList[i].isVisible = false;
+
+        // Initialize enemy knights
+        enemyKnightsList[i].xpos = ENEMY_TOWER_X;
+        enemyKnightsList[i].dx = 0;
+        enemyKnightsList[i].ypos = ENEMY_TOWER_Y;
+        enemyKnightsList[i].width = KNIGHT_DEFAULT_WIDTH;
+        enemyKnightsList[i].height = KNIGHT_DEFAULT_HEIGHT;
+        enemyKnightsList[i].health = 1;
+        enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos + enemyKnightsList[i].width; // can maybe just set the hitbox to the xpos
+        enemyKnightsList[i].detectionRange = 10; // might need to set this to be negative OR just subtract when using it
+        enemyKnightsList[i].state = Default;
+        enemyKnightsList[i].image = e_knightDefault[0];
+        enemyKnightsList[i].currentImage = 0;
+        enemyKnightsList[i].isVisible = false;
+
     }
+
 }
 
 void draw(){
     //first erase old objects
     //clear_screen();  // get rid of this later
-    erase_knights();
-
+    //erase_knights(); -- doesnt do anything at the moment because we are drawing the background in this loop
+    if (spawnEnemyKnight) {
+        spawn_enemy_knight();
+    }
 
     //draw objects 
-    draw_background(); // maybe move this out of the draw function so it isnt being called every time --> will need to erase hp and currency though
-    draw_currency(20, 190);
+    draw_background(); 
+    draw_currency(20, 10);
+    draw_knight_button();
 
     // draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); // MANUAL TESTING -- WORKS
     draw_knights();
@@ -339,6 +363,43 @@ void draw_background(){
 }
 
 
+void spawn_enemy_knight(){
+    // spawn in an enemy knight every 15 seconds (can change this/potentially make it decrease over time)
+    for (int i = 0; i < MAX_KNIGHTS - 1; i++){
+        if (enemyKnightsList[i].isVisible == false){
+            enemyKnightsList[i].isVisible = true;
+            enemyKnightsList[i].image = e_knightDefault[0];
+            spawnEnemyKnight = false;
+            break;
+        }
+    }
+}
+
+
+void draw_knight_button(){
+    if (currency < 10){
+        if (knightButtonPressed){
+            draw_sprite(KNIGHT_BUTTON_X, KNIGHT_BUTTON_Y, KNIGHT_BUTTON_WIDTH, KNIGHT_BUTTON_HEIGHT, knightButton[1]);
+            knightButtonPressed = false;
+        } else {
+            draw_sprite(KNIGHT_BUTTON_X, KNIGHT_BUTTON_Y, KNIGHT_BUTTON_WIDTH, KNIGHT_BUTTON_HEIGHT, knightButton[0]);
+        }
+        
+    } else if (currency >= 10){
+        if (knightButtonPressed){
+            draw_sprite(KNIGHT_BUTTON_X, KNIGHT_BUTTON_Y, KNIGHT_BUTTON_WIDTH, KNIGHT_BUTTON_HEIGHT, knightButton[3]);
+            knightButtonPressed = false;   
+            spawn_knight();
+        } else {
+            draw_sprite(KNIGHT_BUTTON_X, KNIGHT_BUTTON_Y, KNIGHT_BUTTON_WIDTH, KNIGHT_BUTTON_HEIGHT, knightButton[2]);
+        }
+    }
+    
+    
+
+
+}
+
 void spawn_knight(){
     // Subtract the cost of the knight
     currency -= 10; 
@@ -356,7 +417,7 @@ void spawn_knight(){
 
 
 bool hasVisibleKnights() {
-    for (int i = 0; i < MAX_KNIGHTS; i++) {
+    for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
         if (knightList[i].isVisible) {
             return true; 
         }
@@ -366,9 +427,12 @@ bool hasVisibleKnights() {
 
 
 void draw_knights(){
-    for (int i = 0; i < MAX_KNIGHTS; i++){
+    for (int i = 0; i < MAX_KNIGHTS - 1; i++){
         if (knightList[i].isVisible){
             draw_sprite(knightList[i].xpos, knightList[i].ypos, knightList[i].width, knightList[i].height, knightList[i].image);
+        }
+        if (enemyKnightsList[i].isVisible){
+            draw_sprite(enemyKnightsList[i].xpos, enemyKnightsList[i].ypos, enemyKnightsList[i].width, enemyKnightsList[i].height, enemyKnightsList[i].image);
         }
     }
 }
@@ -376,7 +440,7 @@ void draw_knights(){
 
 void erase_knights(){
     if (hasVisibleKnights){
-        for (int i = 0; i < MAX_KNIGHTS; i++){
+        for (int i = 0; i < MAX_KNIGHTS - 1; i++){
             if (knightList[i].isVisible){
                 erase_sprite(oldKnightsList[i].xpos, oldKnightsList[i].ypos, oldKnightsList[i].width, oldKnightsList[i].height, oldKnightsList[i].image);
             }
@@ -388,11 +452,11 @@ void erase_knights(){
 
 
 void update_knights(){
-    // check collisions or enemy detection
+    // NEED TO DO: check collisions or enemy detection
 
-    // update x and y position as well as currentState 
+    
     for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
-        // Only update visible/spawned in knights
+        // USER KNIGHTS 
         if (knightList[i].isVisible) {
             oldKnightsList[i] = knightList[i]; // save the old position to erase
 
@@ -418,7 +482,7 @@ void update_knights(){
                 knightList[i].image = knightAttacking[knightList[i].currentImage];
             }
             
-        // 2. Collision Detection
+        // 2. Collision Detection (might need to move this to the bottom / write detection code at the bottom once enemy knights updated as well)
             
             if (knightList[i].xpos >= ENEMY_TOWER_X_EDGE && knightList[i].state != Attacking){
                 knightList[i].state = Attacking;
@@ -432,6 +496,52 @@ void update_knights(){
 
             // Update hitboxes
             knightList[i].hitbox = knightList[i].xpos + knightList[i].width;
+        }
+
+        // ENEMY KNIGHTS
+        if (enemyKnightsList[i].isVisible) {
+            // oldKnightsList[i] = knightList[i]; // save the old position to erase
+
+        // 1. Update variables depending on the current state
+            // if just spawned in, update to walking state
+            if (enemyKnightsList[i].state == Default && enemyKnightsList[i].xpos == ENEMY_TOWER_X) {
+                enemyKnightsList[i].state = Walking;
+                enemyKnightsList[i].width = KNIGHT_WALKING_WIDTH;
+                enemyKnightsList[i].height = KNIGHT_WALKING_HEIGHT;
+                enemyKnightsList[i].image = e_knightWalking[0];
+                enemyKnightsList[i].dx = 2;
+            } 
+            // if in walking state
+            else if (enemyKnightsList[i].state == Walking) {
+                // Update the current image index for animation
+                enemyKnightsList[i].currentImage = (enemyKnightsList[i].currentImage + 1) % 6; 
+                // Update the image pointer to the current image
+                enemyKnightsList[i].image = e_knightWalking[enemyKnightsList[i].currentImage];
+                // Update the position of the knight
+                enemyKnightsList[i].xpos = enemyKnightsList[i].xpos - enemyKnightsList[i].dx; // moving left so we subtract dx instead of adding
+            } else if (enemyKnightsList[i].state == Attacking){
+                enemyKnightsList[i].currentImage = (enemyKnightsList[i].currentImage + 1) % 3;
+                enemyKnightsList[i].image = e_knightAttacking[enemyKnightsList[i].currentImage];
+            }
+
+        // 2. Collision Detection (might need to move this to the bottom / write detection code at the bottom once all knights have been updated)
+
+
+            if (enemyKnightsList[i].xpos <= USER_TOWER_X_EDGE && enemyKnightsList[i].state != Attacking){
+                enemyKnightsList[i].state = Attacking;
+                enemyKnightsList[i].dx = 0; 
+                enemyKnightsList[i].width = KNIGHT_ATTACKING_WIDTH;
+                enemyKnightsList[i].height = KNIGHT_ATTACKING_HEIGHT;
+                enemyKnightsList[i].image = e_knightAttacking[0];
+            }
+            
+
+
+            // Update hitboxes
+            // enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos + enemyKnightsList[i].width; // this would be calculating the right hand side hit box
+            
+            // for enemy knights, can probably just set hitbox to xpos for left hand side boundary but you can decide how you want to do this
+
         }
     }
 }
@@ -543,19 +653,15 @@ void check_key_press(){
             if(currentGameState == Intro){
                 if(key_buffer[i] == 0x5A){ // ENTER key
                     currentGameState = Game;
-                    printf("Hello there, new to gamee?? \n");
+                    printf("Hello there, new to gamee?? \n"); // TESTING - (working) will remove 
                 }
             }
             else if(currentGameState == Game){
                 if(key_buffer[i] == 0x16){ // 1 key
-                    if(currency >= 10){
-                        currency -= 10;
-                        spawn_knight();
-                        printf("Spawned Knight\n");
-                    }
-                    else{
-                        printf("Not enough currency\n");
-                    }
+                        knightButtonPressed = true;
+                        // spawn_knight(); 
+                        printf("Spawned Knight\n"); // TESTING - (working) will remove
+                   
                 }
             }
         }
@@ -576,7 +682,7 @@ void init_timer_interrupt(void){
     NIOS2_WRITE_IENABLE(ctl3read|0b1);
     int ctl0status;
     NIOS2_READ_STATUS(ctl0status);
-    if( ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
+    if(ctl0status & 0x1);// check Nios II status to see if interrupts are currently enabled
     else
         NIOS2_WRITE_STATUS(1); // enable Nios II interrupts if they are currently disabled
     *(timer_ptr + 1) = 0x7; // start timer
@@ -588,6 +694,12 @@ void timer_ISR(){
     *(timer_ptr) = 0; // clear the interrupt
     current_time++;
     currency++;
+
+    if ((current_time & ENEMY_KNIGHT_SPAWN_INTERVAL) == 0){
+        spawnEnemyKnight = true;
+    }
+    
+
     printf("Timer Count: %d\n", current_time);
     printf("Currency: %d\n", currency);
     return;

@@ -38,10 +38,10 @@ Last Updated: Mar. 24th, 2024
     do { dest = __builtin_rdctl(5); } while (0)
 
 // Game Related Definitions
-#define MAX_KNIGHTS 20
+#define MAX_KNIGHTS 50
 
 #define USER_TOWER_X 35
-#define USER_TOWER_X_EDGE 55
+#define USER_TOWER_X_EDGE 45
 #define USER_TOWER_Y 160
 #define ENEMY_TOWER_X 285
 #define ENEMY_TOWER_X_EDGE 265
@@ -53,6 +53,12 @@ Last Updated: Mar. 24th, 2024
 #define KNIGHT_WALKING_HEIGHT 22
 #define KNIGHT_ATTACKING_WIDTH 27
 #define KNIGHT_ATTACKING_HEIGHT 19
+#define ENEMY_KNIGHT_SPAWN_INTERVAL 15
+
+#define KNIGHT_BUTTON_X 100
+#define KNIGHT_BUTTON_Y 190
+#define KNIGHT_BUTTON_WIDTH 34
+#define KNIGHT_BUTTON_HEIGHT 43
 
 #define DIGIT_WIDTH 6
 #define DIGIT_HEIGHT 10
@@ -73,7 +79,9 @@ void draw();
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
     
     void draw_background();
+    void draw_knight_button();
 
+    void spawn_enemy_knight();
     void spawn_knight();
     bool hasVisibleKnights();
     void draw_knights();
@@ -187,6 +195,9 @@ short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
 int vgaWidth = 320;               // vga dimensions
 int vgaHeight = 240;
+
+bool knightButtonPressed;
+bool spawnEnemyKnight;
 /*************************************************************************************************************/
 
 #endif  // GLOBAL_H
