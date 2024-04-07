@@ -886,7 +886,7 @@ const unsigned short int Number_9[10 * 6] = {
 
 // SMALL NUMBERS
 
-const short int small_Number0[5*3] = {
+const short int small_number_0[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
@@ -894,7 +894,7 @@ const short int small_Number0[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number1[5*3] = {
+const short int small_number_1[5*3] = {
 0xC8F9, 0x0000, 0xC8F9, 
 0xC8F9, 0x0000, 0xC8F9, 
 0xC8F9, 0x0000, 0xC8F9, 
@@ -902,7 +902,7 @@ const short int small_Number1[5*3] = {
 0xC8F9, 0x0000, 0xC8F9, 
 };
 
-const short int small_Number2[5*3] = {
+const short int small_number_2[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -910,7 +910,7 @@ const short int small_Number2[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number3[5*3] = {
+const short int small_number_3[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -918,7 +918,7 @@ const short int small_Number3[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number4[5*3] = {
+const short int small_number_4[5*3] = {
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -926,7 +926,7 @@ const short int small_Number4[5*3] = {
 0xC8F9, 0xC8F9, 0x0000, 
 };
 
-const short int small_Number5[5*3] = {
+const short int small_number_5[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0xC8F9, 
 0x0000, 0x0000, 0x0000, 
@@ -934,7 +934,7 @@ const short int small_Number5[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number6[5*3] = {
+const short int small_number_6[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0xC8F9, 
 0x0000, 0x0000, 0x0000, 
@@ -942,7 +942,7 @@ const short int small_Number6[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number7[5*3] = {
+const short int small_number_7[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
 0xC8F9, 0xC8F9, 0x0000, 
@@ -950,7 +950,7 @@ const short int small_Number7[5*3] = {
 0xC8F9, 0xC8F9, 0x0000, 
 };
 
-const short int small_Number8[5*3] = {
+const short int small_number_8[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -958,7 +958,7 @@ const short int small_Number8[5*3] = {
 0x0000, 0x0000, 0x0000, 
 };
 
-const short int small_Number9[5*3] = {
+const short int small_number_9[5*3] = {
 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 
@@ -967,7 +967,6 @@ const short int small_Number9[5*3] = {
 };
 
 // SMALL PERCENTAGE SIGN
-
 const short int small_percentage[7*7] = {
 0xC8F9, 0x0000, 0xC8F9, 0xC8F9, 0xC8F9, 0xC8F9, 0x0000, 
 0x0000, 0x0000, 0x0000, 0xC8F9, 0xC8F9, 0x0000, 0xC8F9, 
@@ -977,8 +976,6 @@ const short int small_percentage[7*7] = {
 0xC8F9, 0x0000, 0xC8F9, 0xC8F9, 0x0000, 0x0000, 0x0000, 
 0x0000, 0xC8F9, 0xC8F9, 0xC8F9, 0xC8F9, 0x0000, 0xC8F9, 
 };
-
-
 
 
 // CHARACTER BUTTONS
@@ -1219,6 +1216,9 @@ const short int Knight_Button4[43 * 34] = {
 #define DIGIT_WIDTH 6
 #define DIGIT_HEIGHT 10
 
+#define SMALL_DIGIT_WIDTH 3
+#define SMALL_DIGIT_HEIGHT 5
+#define SMALL_PERCENTAGE_WIDTH 7
 
 /*************************************************************************************************************/
 
@@ -1230,22 +1230,26 @@ void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
 void draw();
-    void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
-    void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
-        // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
-    
-    void draw_background();
-    void draw_knight_button();
+void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
+void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
+    // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
 
-    void spawn_enemy_knight();
-    void spawn_knight();
-    bool hasVisibleKnights();
-    void draw_knights();
-    void erase_knights();
-    void update_knights();
-    
-    void draw_currency();
+void draw_background();
+void draw_knight_button();
+
+void spawn_enemy_knight();
+void spawn_knight();
+bool hasVisibleKnights();
+void draw_knights();
+void erase_knights();
+void update_knights();
+void draw_currency();
 void intializeSprites();
+
+void draw_health_bar();
+void draw_box(int x, int y, int width, int height, short int color, int type);
+void draw_health_number(int health, int x, int y);
+
 //void draw();
     //void update_positions --> have different parts of code to update different types of characters
 
@@ -1284,12 +1288,15 @@ typedef struct Knight {
     int width;
     int height;
     int health;
+    int damage;
     int hitbox; // this is the right hand hitbox of the knight (xpos + width)
     int detectionRange; // this is the range past the hitbox that the knight will be scanning for entities
     spriteState state;
     unsigned short *image;
     int currentImage;
     bool isVisible;
+    int fight_type; // 0 for no fight, 1 for for enemy knights and 2 for enemy towers
+    int enemy_knight_number; // this is the index of the enemy knight that the knight is fighting
 
 } Knight;
 
@@ -1336,6 +1343,11 @@ volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
 volatile int key_buffer_count = 0; //counter for the key buffer;
 int g = 10; // gravity
 
+volatile int timer_count = 0;
+
+int user_tower_health = 100;
+int enemy_tower_health = 1000;
+
 struct fb_t { unsigned short volatile  pixels[256][512]; };
 struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
 gameState currentGameState;
@@ -1354,6 +1366,8 @@ int vgaHeight = 240;
 
 bool knightButtonPressed;
 bool spawnEnemyKnight;
+
+int currencyIncreasingFactor = 1;
 /*************************************************************************************************************/
 
 
@@ -1377,7 +1391,7 @@ unsigned short *e_knightAttacking[3] = {Enemy_Knight_Attacking1, Enemy_Knight_At
 
 
 unsigned short *numberImages[10] = {Number_0, Number_1, Number_2, Number_3, Number_4, Number_5, Number_6, Number_7, Number_8, Number_9};
-unsigned short *smallNumberImages[10] = {small_Number0, small_Number1, small_Number2, small_Number3, small_Number4, small_Number5, small_Number6, small_Number7, 8, small_Number9};
+unsigned short *smallnumberImages[11] = {small_number_0, small_number_1, small_number_2, small_number_3, small_number_4, small_number_5, small_number_6, small_number_7, small_number_8, small_number_9, small_percentage};
 unsigned short *knightButton[4] = {Knight_Button1, Knight_Button2, Knight_Button3, Knight_Button4};
 
 
@@ -1388,10 +1402,10 @@ unsigned short *knightButton[4] = {Knight_Button1, Knight_Button2, Knight_Button
 void the_reset(void) __attribute__((section(".reset")));
 void the_reset(void)
 /*******************************************************************************
- * Reset code. By giving the code a section attribute with the name ".reset" we
- * allow the linker program to locate this code at the proper reset vector
- * address. This code just calls the main program.
- ******************************************************************************/
+    * Reset code. By giving the code a section attribute with the name ".reset" we
+    * allow the linker program to locate this code at the proper reset vector
+    * address. This code just calls the main program.
+    ******************************************************************************/
 {
     asm(".set noat");      /* Instruct the assembler NOT to use reg at (r1) as
                             * a temp register for performing optimizations */
@@ -1403,25 +1417,25 @@ void the_reset(void)
     asm("jmp r2");
 }
 /* The assembly language code below handles CPU exception processing. This
- * code should not be modified; instead, the C language code in the function
- * interrupt_handler() can be modified as needed for a given application.
- */
+* code should not be modified; instead, the C language code in the function
+* interrupt_handler() can be modified as needed for a given application.
+*/
 void the_exception(void) __attribute__((section(".exceptions")));
 void the_exception(void)
 /*******************************************************************************
- * Exceptions code. By giving the code a section attribute with the name
- * ".exceptions" we allow the linker program to locate this code at the proper
- * exceptions vector address.
- * This code calls the interrupt handler and later returns from the exception.
- ******************************************************************************/
+    * Exceptions code. By giving the code a section attribute with the name
+    * ".exceptions" we allow the linker program to locate this code at the proper
+    * exceptions vector address.
+    * This code calls the interrupt handler and later returns from the exception.
+    ******************************************************************************/
 {
     asm("subi sp, sp, 128");
     asm("stw et, 96(sp)");
     asm("rdctl et, ctl4");
     asm("beq et, r0, SKIP_EA_DEC"); // Interrupt is not external
     asm("subi ea, ea, 4");          /* Must decrement ea by one instruction
-                                     * for external interupts, so that the
-                                     * interrupted instruction will be run */
+                                    * for external interupts, so that the
+                                    * interrupted instruction will be run */
     asm("SKIP_EA_DEC:");
     asm("stw r1, 4(sp)"); // Save all registers
     asm("stw r2, 8(sp)");
@@ -1491,12 +1505,12 @@ void the_exception(void)
     asm("eret");
 }
 /******************************************************************************
- * Interrupt Service Routine
- * Determines what caused the interrupt and calls the appropriate
- * subroutine.
- *
- * ipending - Control register 4 which has the pending external interrupts
- ******************************************************************************/
+    * Interrupt Service Routine
+    * Determines what caused the interrupt and calls the appropriate
+    * subroutine.
+    *
+    * ipending - Control register 4 which has the pending external interrupts
+    ******************************************************************************/
 void interrupt_handler(void)
 {
     int ipending;
@@ -1541,11 +1555,11 @@ int main(){
     current_background = game_background; // TESTING - set this intro background when made
 
     intializeSprites();
-    // spawn_knight(); // TESTING 
+    //spawn_knight(); // TESTING 
     draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
 
     knightButtonPressed = false;
-    spawnEnemyKnight = false;
+    spawnEnemyKnight = true;
     start_time = 0;
     current_time = start_time;
     currency = 0;
@@ -1576,7 +1590,7 @@ int main(){
     }
 
 
-	return 0;
+    return 0;
 }
 /*************************************************************************************************************/
 
@@ -1585,28 +1599,28 @@ int main(){
 
 /*************************************************************************************************************/
 void plot_pixel(int x, int y, unsigned short int color) {
-  volatile short int *one_pixel_address;
-  one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
-  *one_pixel_address = color;
+volatile short int *one_pixel_address;
+one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
+*one_pixel_address = color;
 }
 
 
 void wait_for_vsync() {
-  volatile int *pixel_ctrl_ptr = (int *)0xff203020;  // base address of the VGA controller
-  int status;
-  *pixel_ctrl_ptr = 1;  // start the synchronization process
-  // write 1 into front buffer address register
-  status = *(pixel_ctrl_ptr + 3);  // read the status register
+volatile int *pixel_ctrl_ptr = (int *)0xff203020;  // base address of the VGA controller
+int status;
+*pixel_ctrl_ptr = 1;  // start the synchronization process
+// write 1 into front buffer address register
+status = *(pixel_ctrl_ptr + 3);  // read the status register
 
-  while ((status & 0x01) != 0) {  // polling loop waiting for S bit to go to 0
+while ((status & 0x01) != 0) {  // polling loop waiting for S bit to go to 0
     status = *(pixel_ctrl_ptr + 3);
-  }  // loop/function exits when status bit goes to 0
+}  // loop/function exits when status bit goes to 0
 }
 
 
 void clear_screen() {
-  int y, x;
-  for (x = 0; x < vgaWidth; x++)
+int y, x;
+for (x = 0; x < vgaWidth; x++)
     for (y = 0; y < vgaHeight; y++) plot_pixel(x, y, 0);
 }
 
@@ -1619,13 +1633,17 @@ void intializeSprites(){
         knightList[i].ypos = USER_TOWER_Y;
         knightList[i].width = KNIGHT_DEFAULT_WIDTH;
         knightList[i].height = KNIGHT_DEFAULT_HEIGHT;
-        knightList[i].health = 1;
-        knightList[i].hitbox = knightList[i].xpos + knightList[i].width;
-        knightList[i].detectionRange = 10;
+        knightList[i].health = 7;
+        knightList[i].detectionRange = 3;
+        knightList[i].hitbox = knightList[i].xpos + knightList[i].width + knightList[i].detectionRange;
         knightList[i].state = Default;
         knightList[i].image = knightDefault[0];
         knightList[i].currentImage = 0;
         knightList[i].isVisible = false;
+        knightList[i].damage = 1;
+        knightList[i].fight_type = 0;
+        knightList[i].enemy_knight_number = -1;
+
 
         // Initialize enemy knights
         enemyKnightsList[i].xpos = ENEMY_TOWER_X;
@@ -1633,15 +1651,18 @@ void intializeSprites(){
         enemyKnightsList[i].ypos = ENEMY_TOWER_Y;
         enemyKnightsList[i].width = KNIGHT_DEFAULT_WIDTH;
         enemyKnightsList[i].height = KNIGHT_DEFAULT_HEIGHT;
-        enemyKnightsList[i].health = 1;
-        enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos + enemyKnightsList[i].width; // can maybe just set the hitbox to the xpos
-        enemyKnightsList[i].detectionRange = 10; // might need to set this to be negative OR just subtract when using it
+        enemyKnightsList[i].health = 5;
+        enemyKnightsList[i].detectionRange = 3; // might need to set this to be negative OR just subtract when using it
+        enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos - enemyKnightsList[i].detectionRange; // can maybe just set the hitbox to the xpos
         enemyKnightsList[i].state = Default;
         enemyKnightsList[i].image = e_knightDefault[0];
         enemyKnightsList[i].currentImage = 0;
         enemyKnightsList[i].isVisible = false;
+        enemyKnightsList[i].damage = 1;
+        enemyKnightsList[i].fight_type = 0;
+        enemyKnightsList[i].enemy_knight_number = -1;
 
-    }
+    }   
 
 }
 
@@ -1660,7 +1681,7 @@ void draw(){
 
     // draw_sprite(knightList[0].xpos, knightList[0].ypos, knightList[0].width, knightList[0].height, knightList[0].image); // MANUAL TESTING -- WORKS
     draw_knights();
-
+    draw_health_bar();
 
     //update everything 
     update_knights();
@@ -1671,17 +1692,17 @@ void draw(){
 void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite) {
     int sxi, syi; // sprite pixel position
     int xi, yi;   // current pixel being drawn
-	
-	for (sxi = 0; sxi < width; sxi++){
-		for (syi = 0; syi < height; syi++) {
-		   xi = x + sxi;
-		   yi = y + syi;
-     	   
-           int index = syi * width + sxi;
-           if(sprite[index] != TRANSPARENT)
+    
+    for (sxi = 0; sxi < width; sxi++){
+        for (syi = 0; syi < height; syi++) {
+        xi = x + sxi;
+        yi = y + syi;
+        
+        int index = syi * width + sxi;
+        if(sprite[index] != TRANSPARENT)
                 plot_pixel(xi, yi, sprite[index]);
-           
-	    }
+        
+        }
     }
 }
 
@@ -1689,17 +1710,17 @@ void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite
 void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite) {
     int sxi, syi; // sprite pixel position
     int xi, yi;   // current pixel being drawn
-	
-	for (sxi = 0; sxi < width; sxi++){
-		for (syi = 0; syi < height; syi++) {
-		   xi = x + sxi;
-		   yi = y + syi;
-     	   
-           int index = syi * width + sxi;
-           if(sprite[index] != TRANSPARENT)
+    
+    for (sxi = 0; sxi < width; sxi++){
+        for (syi = 0; syi < height; syi++) {
+        xi = x + sxi;
+        yi = y + syi;
+        
+        int index = syi * width + sxi;
+        if(sprite[index] != TRANSPARENT)
                 plot_pixel(xi, yi, current_background[index]);
-           
-	    }
+        
+        }
     }
 }
 
@@ -1801,7 +1822,29 @@ void update_knights(){
     for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
         // USER KNIGHTS 
         if (knightList[i].isVisible) {
-            oldKnightsList[i] = knightList[i]; // save the old position to erase
+            if(knightList[i].health <= 0){
+                knightList[i].isVisible = false;
+                knightList[i].state = Default;
+                knightList[i].xpos = USER_TOWER_X;
+                knightList[i].dx = 0;
+                knightList[i].health = 7;
+                knightList[i].fight_type = 0;
+                knightList[i].enemy_knight_number = -1;
+                knightList[i].hitbox = knightList[i].xpos + knightList[i].width + knightList[i].detectionRange;
+                continue;
+                //oldKnightsList[i] = knightList[i]; // save the old position to erase
+            }
+
+            if(knightList[i].fight_type==1 && knightList[i].enemy_knight_number == -1){
+                knightList[i].fight_type = 0;
+                knightList[i].state = Walking;
+                knightList[i].dx = 2;
+                knightList[i].width = KNIGHT_WALKING_WIDTH;
+                knightList[i].height = KNIGHT_WALKING_HEIGHT;
+                knightList[i].image = knightWalking[0];
+            }
+
+
 
         // 1. Update variables depending on the current state
             // if just spawned in, update to walking state
@@ -1823,27 +1866,87 @@ void update_knights(){
             } else if (knightList[i].state == Attacking){
                 knightList[i].currentImage = (knightList[i].currentImage + 1) % 3;
                 knightList[i].image = knightAttacking[knightList[i].currentImage];
+                if((knightList[i].currentImage + 1)%3 == 2){
+                    if(knightList[i].fight_type == 1 && knightList[i].enemy_knight_number != -1){
+                        enemyKnightsList[knightList[i].enemy_knight_number].health -= knightList[i].damage;
+                        if(enemyKnightsList[knightList[i].enemy_knight_number].health <= 0){
+                            currency += 5;
+                            // enemyKnightsList[knightList[i].enemy_knight_number].isVisible = false;
+                            knightList[i].enemy_knight_number = -1;
+                        }
+                    } 
+                    else if(knightList[i].fight_type == 2){
+                        enemy_tower_health -= knightList[i].damage;
+                    }
+                }
             }
             
         // 2. Collision Detection (might need to move this to the bottom / write detection code at the bottom once enemy knights updated as well)
             
-            if (knightList[i].xpos >= ENEMY_TOWER_X_EDGE && knightList[i].state != Attacking){
+            if (knightList[i].hitbox >= ENEMY_TOWER_X_EDGE && knightList[i].state != Attacking){
                 knightList[i].state = Attacking;
                 knightList[i].dx = 0; 
                 knightList[i].width = KNIGHT_ATTACKING_WIDTH;
                 knightList[i].height = KNIGHT_ATTACKING_HEIGHT;
                 knightList[i].image = knightAttacking[0];
+                knightList[i].fight_type = 2;
             }
-            
+
+            for(int j = 0; j < MAX_KNIGHTS - 1; j++){
+                if(enemyKnightsList[j].isVisible){
+                    if(knightList[i].hitbox >= enemyKnightsList[j].hitbox && enemyKnightsList[j].enemy_knight_number == -1 && enemyKnightsList[j].health>0){
+                        knightList[i].state = Attacking;
+                        knightList[i].dx = 0;
+                        knightList[i].width = KNIGHT_ATTACKING_WIDTH;
+                        knightList[i].height = KNIGHT_ATTACKING_HEIGHT;
+                        knightList[i].image = knightAttacking[0];
+                        knightList[i].fight_type = 1;
+                        knightList[i].enemy_knight_number = j;
+                        
+                        enemyKnightsList[j].state = Attacking;
+                        enemyKnightsList[j].dx = 0;
+                        enemyKnightsList[j].width = KNIGHT_ATTACKING_WIDTH;
+                        enemyKnightsList[j].height = KNIGHT_ATTACKING_HEIGHT;
+                        enemyKnightsList[j].image = e_knightAttacking[0];
+                        enemyKnightsList[j].fight_type = 1;
+                        enemyKnightsList[j].enemy_knight_number = i;
+
+                        break;
+                    }
+                }
+            }
 
 
             // Update hitboxes
-            knightList[i].hitbox = knightList[i].xpos + knightList[i].width;
+            knightList[i].hitbox = knightList[i].xpos + knightList[i].width + knightList[i].detectionRange; // this would be calculating the right hand side hit box
         }
+    }
 
+    for (int i = 0; i < MAX_KNIGHTS - 1; i++) {
         // ENEMY KNIGHTS
         if (enemyKnightsList[i].isVisible) {
             // oldKnightsList[i] = knightList[i]; // save the old position to erase
+            if(enemyKnightsList[i].health <= 0){
+                enemyKnightsList[i].state = Default;
+                enemyKnightsList[i].xpos = ENEMY_TOWER_X;
+                enemyKnightsList[i].dx = 0;
+                enemyKnightsList[i].isVisible = false;
+                enemyKnightsList[i].fight_type = 0;
+                enemyKnightsList[i].enemy_knight_number = -1;
+                enemyKnightsList[i].health = 5;
+                enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos - enemyKnightsList[i].detectionRange;
+                continue;
+                //oldKnightsList[i] = enemyKnightsList[i]; // save the old position to erase
+            }
+
+            if(enemyKnightsList[i].fight_type==1 && enemyKnightsList[i].enemy_knight_number == -1){
+                enemyKnightsList[i].fight_type = 0;
+                enemyKnightsList[i].state = Walking;
+                enemyKnightsList[i].dx = 2;
+                enemyKnightsList[i].width = KNIGHT_WALKING_WIDTH;
+                enemyKnightsList[i].height = KNIGHT_WALKING_HEIGHT;
+                enemyKnightsList[i].image = knightWalking[0];
+            }
 
         // 1. Update variables depending on the current state
             // if just spawned in, update to walking state
@@ -1862,26 +1965,73 @@ void update_knights(){
                 enemyKnightsList[i].image = e_knightWalking[enemyKnightsList[i].currentImage];
                 // Update the position of the knight
                 enemyKnightsList[i].xpos = enemyKnightsList[i].xpos - enemyKnightsList[i].dx; // moving left so we subtract dx instead of adding
-            } else if (enemyKnightsList[i].state == Attacking){
+            } 
+            else if (enemyKnightsList[i].state == Attacking){
                 enemyKnightsList[i].currentImage = (enemyKnightsList[i].currentImage + 1) % 3;
                 enemyKnightsList[i].image = e_knightAttacking[enemyKnightsList[i].currentImage];
+
+                if((enemyKnightsList[i].currentImage + 1)%3 == 2){
+
+                    if(enemyKnightsList[i].fight_type == 1 && enemyKnightsList[i].enemy_knight_number != -1){
+                        knightList[enemyKnightsList[i].enemy_knight_number].health -= enemyKnightsList[i].damage;
+                        if(knightList[enemyKnightsList[i].enemy_knight_number].health <= 0){
+                            //currency -= 5;
+                            enemyKnightsList[i].enemy_knight_number = -1;
+                            // knightList[i].fight_type = 0;
+                            // knightList[i].state = Default;
+                            // knightList[i].xpos = ENEMY_TOWER_X;
+                            // knightList[i].dx = 0;
+                            // knightList[i].isVisible = false;
+                        }
+                    } 
+
+                    else if(enemyKnightsList[i].fight_type == 2){
+                        user_tower_health -= enemyKnightsList[i].damage;
+                    }
+                }
             }
 
         // 2. Collision Detection (might need to move this to the bottom / write detection code at the bottom once all knights have been updated)
 
 
-            if (enemyKnightsList[i].xpos <= USER_TOWER_X_EDGE && enemyKnightsList[i].state != Attacking){
+            if ((enemyKnightsList[i].hitbox + KNIGHT_WALKING_WIDTH - KNIGHT_ATTACKING_WIDTH) <= USER_TOWER_X_EDGE && enemyKnightsList[i].state != Attacking){
                 enemyKnightsList[i].state = Attacking;
                 enemyKnightsList[i].dx = 0; 
                 enemyKnightsList[i].width = KNIGHT_ATTACKING_WIDTH;
                 enemyKnightsList[i].height = KNIGHT_ATTACKING_HEIGHT;
                 enemyKnightsList[i].image = e_knightAttacking[0];
+                enemyKnightsList[i].xpos = enemyKnightsList[i].xpos + KNIGHT_WALKING_WIDTH - KNIGHT_ATTACKING_WIDTH;
+                enemyKnightsList[i].fight_type = 2;
             }
             
 
+            for(int j = 0; j < MAX_KNIGHTS - 1; j++){
+                if(knightList[j].isVisible){
+                    if(knightList[j].hitbox >= enemyKnightsList[i].hitbox && knightList[j].enemy_knight_number == -1 && knightList[j].health>0){
+                        knightList[j].state = Attacking;
+                        knightList[j].dx = 0;
+                        knightList[j].width = KNIGHT_ATTACKING_WIDTH;
+                        knightList[j].height = KNIGHT_ATTACKING_HEIGHT;
+                        knightList[j].image = knightAttacking[0];
+                        knightList[j].fight_type = 1;
+                        knightList[j].enemy_knight_number = i;
+                        
+                        enemyKnightsList[i].state = Attacking;
+                        enemyKnightsList[i].dx = 0;
+                        enemyKnightsList[i].width = KNIGHT_ATTACKING_WIDTH;
+                        enemyKnightsList[i].height = KNIGHT_ATTACKING_HEIGHT;
+                        enemyKnightsList[i].image = e_knightAttacking[0];
+                        enemyKnightsList[i].fight_type = 1;
+                        enemyKnightsList[i].enemy_knight_number = j;
+
+                        break;
+                    }
+                }
+            }
+
 
             // Update hitboxes
-            // enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos + enemyKnightsList[i].width; // this would be calculating the right hand side hit box
+            enemyKnightsList[i].hitbox = enemyKnightsList[i].xpos - enemyKnightsList[i].detectionRange; // this would be calculating the right hand side hit box
             
             // for enemy knights, can probably just set hitbox to xpos for left hand side boundary but you can decide how you want to do this
 
@@ -1924,8 +2074,8 @@ void draw_currency(int x, int y) {
 }
 
 /*******************************************************************************
- * This function sets up the PS2 keyboard interrupt.
- ********************************************************************************/
+    * This function sets up the PS2 keyboard interrupt.
+    ********************************************************************************/
 void init_PS2_interrupt(void)
 {
     volatile int *PS2_ptr = (int *)0xFF200100;              // PS2 base address
@@ -1945,8 +2095,8 @@ void init_PS2_interrupt(void)
 
 
 /*******************************************************************************
- * This function is the PS2 interrupt service routine.
- ********************************************************************************/
+    * This function is the PS2 interrupt service routine.
+    ********************************************************************************/
 void PS2_ISR(void)
 {
     /* Declare volatile pointers to I/O registers (volatile means that IO load
@@ -2004,12 +2154,12 @@ void check_key_press(){
                         knightButtonPressed = true;
                         // spawn_knight(); 
                         printf("Spawned Knight\n"); // TESTING - (working) will remove
-                   
+                
                 }
             }
         }
     }
-	return;
+    return;
 }
 
 
@@ -2019,9 +2169,9 @@ void init_timer_interrupt(void){
     int data = 0x5F5E100;
     *(timer_ptr + 2) = data&0xFFFF; // write to control register to set the timer period
     *(timer_ptr + 3) = data>>16; // start timer
-	    /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
-	int ctl3read;
-	NIOS2_READ_IENABLE(ctl3read);
+        /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
+    int ctl3read;
+    NIOS2_READ_IENABLE(ctl3read);
     NIOS2_WRITE_IENABLE(ctl3read|0b1);
     int ctl0status;
     NIOS2_READ_STATUS(ctl0status);
@@ -2046,6 +2196,78 @@ void timer_ISR(){
     printf("Timer Count: %d\n", current_time);
     printf("Currency: %d\n", currency);
     return;
+}
+
+
+void draw_health_bar(void){
+    draw_box(35, 105, 9, 52, 0xc5ea, 0);
+    draw_box(285, 105, 9, 52, 0xc5ea, 0);
+    if(enemy_tower_health == 1000){
+        draw_box(285, 105, 7, 50, 0x0bc1, 0);
+        draw_health_number(285, 105, enemy_tower_health);
+    }
+    else{
+        draw_box(285-25, 105, 7, (int)(enemy_tower_health/20), 0x0bc1, 1);
+        draw_health_number(285, 105, enemy_tower_health);
+    }
+    if(user_tower_health == 100){
+        draw_box(35, 105, 7, 50, 0x0bc1, 0);
+        draw_health_number(35, 105, user_tower_health);
+    }
+    else{
+        draw_box(35-25, 105, 7, (int)(user_tower_health/2), 0x0bc1, 1);
+        draw_health_number(35, 105, user_tower_health);
+    }
+}
+
+void draw_box(int x, int y, int height, int width, short int box_colour, int type){
+    // draw a rectangle
+    if(type == 0){
+        for(int i = x-(width/2); i<x+(width-width/2); i++){
+            for(int j = y-(height/2); j<y+(height-height/2); j++){
+                plot_pixel(i, j, box_colour);
+            }
+        }
+    }
+    else if(type == 1){
+        for(int i = x; i<x+width; i++){
+            for(int j = y-(height/2); j<y+(height-height/2); j++){
+                plot_pixel(i, j, box_colour);
+            }
+        }
+    }
+}
+
+void draw_health_number(int x, int y, int health){
+
+    int temp_health = health;
+
+    int digit_width_with_spacing = SMALL_DIGIT_WIDTH + 1; // Assuming 1 pixel space between digits for clarity
+
+    // Calculate the number of digits in the currency to adjust starting x position
+    int num_digits = 0;
+    for (int temp = temp_health; temp > 0; temp /= 10) {
+        num_digits++;
+    }
+    
+    // Adjust the starting x position based on the number of digits to draw from left to right
+    int adjusted_x = x + ((num_digits - 1) * digit_width_with_spacing + SMALL_PERCENTAGE_WIDTH + 1)/2;
+    
+    draw_sprite(adjusted_x, y-3, SMALL_PERCENTAGE_WIDTH, SMALL_PERCENTAGE_WIDTH, small_percentage);
+    adjusted_x -= SMALL_PERCENTAGE_WIDTH + 1;
+
+    while (temp_health > 0) {
+        int digit = temp_health % 10; // Extract the rightmost digit
+        temp_health /= 10; // Remove the rightmost digit
+        
+        // Draw the current digit
+        // Note: numberImages array is indexed correctly with 0 being the first element
+        draw_sprite(adjusted_x, y-(SMALL_DIGIT_HEIGHT/2), SMALL_DIGIT_WIDTH, SMALL_DIGIT_HEIGHT, smallnumberImages[digit]);
+        
+        // Move to the next position on the left
+        adjusted_x -= digit_width_with_spacing;
+    }
+
 }
 
 /*************************************************************************************************************/
