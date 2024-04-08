@@ -13,7 +13,7 @@ def image_to_c_array_file(image_path, output_file):
     
     # Open output file
     with open(output_file, 'w') as file:
-        file.write(f"const short int Number_[{height * width}] = {{\n")
+        file.write(f"const short int _background[{height * width}] = {{\n")
         
         for y in range(height):
             for x in range(width):
@@ -24,25 +24,7 @@ def image_to_c_array_file(image_path, output_file):
         
         file.write("};\n")
 
-image_path = 'Knight_Button1.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Knight_Button1.txt')
-image_path = 'Knight_Button2.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Knight_Button2.txt')
-image_path = 'Knight_Button3.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Knight_Button3.txt')
-image_path = 'Knight_Button4.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Knight_Button4.txt')
-image_path = 'Currency_Button1.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Currency_Button1.txt')
-image_path = 'Currency_Button2.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Currency_Button2.txt')
-image_path = 'Currency_Button3.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Currency_Button3.txt')
-image_path = 'Currency_Button4.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'Currency_Button4.txt')
 
-image_path = 'intro_background.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'intro_background.txt')
 image_path = 'win_background.png'  # Replace with your image path
 image_to_c_array_file(image_path, 'win_background.txt')
 image_path = 'lose_background.png'  # Replace with your image path

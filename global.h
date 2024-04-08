@@ -81,31 +81,34 @@ void interrupt_handler(void);
 void wait_for_vsync();
 void plot_pixel(int x, int y, unsigned short int color);
 void clear_screen();
+
+void initializeGame();
+void intializeSprites();
+void spawn_enemy_knight();
+void spawn_knight();
+void erase_knights(); // currently useless
+    bool hasVisibleKnights(); // used for erase_knights (so also currently useless)
+
 void draw();
     void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
     void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
-        // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
+        // sprite is the image array, x and y are the top left position of the sprite, 
+        // width and height are the dimensions of the sprite
 
     void draw_background();
+    void draw_currency();
     void draw_knight_button();
     void draw_currency_button();
 
-    void spawn_enemy_knight();
-    void spawn_knight();
-    bool hasVisibleKnights();
     void draw_knights();
-    void erase_knights(); // currently useless
+    void draw_health_bar();
+        void draw_box(int x, int y, int width, int height, short int color, int type);
+        void draw_health_number(int health, int x, int y);
+
     void update_knights();
+    void update_game();
     
-    void draw_currency();
-void intializeSprites();
 
-void draw_health_bar();
-void draw_box(int x, int y, int width, int height, short int color, int type);
-void draw_health_number(int health, int x, int y);
-
-
-void update_game();
 
 void check_key_press();
 void timer_ISR(void);
@@ -208,7 +211,7 @@ const unsigned short int* current_background;\
 bool knightButtonPressed;
 bool currencyButtonPressed;
 bool spawnEnemyKnight;
-bool gameStart;
+bool gameStart = false;
 
 int start_time;
 int last_currency_update; 

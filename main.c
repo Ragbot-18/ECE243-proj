@@ -169,7 +169,7 @@ void interrupt_handler(void)
 //---------------------------------------------MAIN FUNCTION-------------------------------------------------//
 int main(){
     init_PS2_interrupt();
-    // init_timer_interrupt();
+
     volatile int *pixel_ctrl_ptr = (int *)0xFF203020; // base address of the VGA controller
 
     // VGA SETUP
@@ -188,24 +188,7 @@ int main(){
     
 
     // Initial setup for the game
-    currentGameState = Intro;
-    current_background = intro_background; 
-
-    intializeSprites();
-    //spawn_knight(); // TESTING 
-    draw_background(); // TESTING - will switch to draw appropriate background depending on currentGameState
-
-    knightButtonPressed = false;
-    currencyButtonPressed =  false;
-    gameStart = false;
-    spawnEnemyKnight = true; // used to spawn in a enemy knight at 0 seconds
-    user_tower_health = 100;
-    enemy_tower_health = 1000;
-    start_time = 0;
-    current_time = start_time;
-    currency = 0;
-    last_currency_update = start_time; 
-    currencyIncreasingFactor = 1;
+    initializeGame();
     
 
     while (1) {
@@ -275,6 +258,30 @@ void clear_screen() {
     for (x = 0; x < vgaWidth; x++)
         for (y = 0; y < vgaHeight; y++) plot_pixel(x, y, 0);
 }
+
+
+void initializeGame(){
+    if (gameStart == false){
+         currentGameState = Intro;
+        current_background = intro_background;
+    }
+
+    intializeSprites(); 
+    draw_background(); 
+
+    knightButtonPressed = false;
+    currencyButtonPressed =  false;
+    gameStart = false;
+    spawnEnemyKnight = true; // used to spawn in a enemy knight at 0 seconds
+    user_tower_health = 100;
+    enemy_tower_health = 1000;
+    start_time = 0;
+    current_time = start_time;
+    currency = 0;
+    last_currency_update = start_time; 
+    currencyIncreasingFactor = 1;
+}
+
 
 void intializeSprites(){
     // Initialize knights
@@ -717,9 +724,13 @@ void update_game(){
     if (user_tower_health <= 0){
         currentGameState = GameLoss;
         current_background = lose_background;
+        volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
+        *(timer_ptr + 1) = 0x8; // stop timer
     } else if (enemy_tower_health <= 0){
         currentGameState = GameWin;
         current_background = win_background;
+        volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
+        *(timer_ptr + 1) = 0x8; // stop timer
     }
 
 }
@@ -838,7 +849,7 @@ void check_key_press(){
             else if(currentGameState == Game){
                 if (key_buffer[i] == 0x45){ // '0' key
                     currencyButtonPressed = true;
-                    printf("Currency Rate Increased");
+                    printf("Currency Rate Increased\n");
                 }
                 
                 if(key_buffer[i] == 0x16){ // '1' key
@@ -847,7 +858,19 @@ void check_key_press(){
                         printf("Spawned Knight\n"); 
                 
                 }
+            } else if (currentGameState == GameLoss || currentGameState == GameWin){
+                if (key_buffer[i] == 0x29){ // 'SPACE' key
+                    currentGameState = Game;
+                    current_background = game_background;
+                    gameStart = true;
+                    initializeGame();
+                    volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
+                    *(timer_ptr + 1) = 0x7; // start timer
+                    printf("Restarting game.\n");
+                }
+                
             }
+            
         }
     }
     return;
@@ -857,7 +880,7 @@ void check_key_press(){
 void init_timer_interrupt(void){
     volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
     *(timer_ptr + 1) = 0x8; // stop timer
-    int data = 0x5F5E100;
+    int data = 0x5F5E100; // start value of 100000000
     *(timer_ptr + 2) = data&0xFFFF; // write to control register to set the timer period
     *(timer_ptr + 3) = data>>16; // start timer
         /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
