@@ -275,11 +275,9 @@ void initializeGame(){
     spawnEnemyKnight = true; // used to spawn in a enemy knight at 0 seconds
     user_tower_health = 100;
     enemy_tower_health = 1000;
-    start_time = 0;
-    current_time = start_time;
+    current_time = 0;
     currency = 0;
-    last_currency_update = start_time; 
-    currencyIncreasingFactor = 1;
+    CurrencyCounter = 100000000;
 }
 
 
@@ -440,7 +438,8 @@ void draw_currency_button(){
         if (currencyButtonPressed){
             draw_sprite(CURRENCY_BUTTON_X, CURRENCY_BUTTON_Y, CURRENCY_BUTTON_WIDTH, CURRENCY_BUTTON_HEIGHT, currencyButton[3]);
             currencyButtonPressed = false;   
-            currencyIncreasingFactor++;
+            CurrencyCounter = CurrencyCounter * 0.85;
+            init_timer_interrupt();
             currency -= 20; 
         } else {
             draw_sprite(CURRENCY_BUTTON_X, CURRENCY_BUTTON_Y, CURRENCY_BUTTON_WIDTH, CURRENCY_BUTTON_HEIGHT, currencyButton[2]);
@@ -864,6 +863,7 @@ void check_key_press(){
                     current_background = game_background;
                     gameStart = true;
                     initializeGame();
+                    init_timer_interrupt();
                     volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
                     *(timer_ptr + 1) = 0x7; // start timer
                     printf("Restarting game.\n");
@@ -880,9 +880,8 @@ void check_key_press(){
 void init_timer_interrupt(void){
     volatile int *timer_ptr = (volatile int *)0xFF202000; // timer base address
     *(timer_ptr + 1) = 0x8; // stop timer
-    int data = 0x5F5E100; // start value of 100000000
-    *(timer_ptr + 2) = data&0xFFFF; // write to control register to set the timer period
-    *(timer_ptr + 3) = data>>16; // start timer
+    *(timer_ptr + 2) = CurrencyCounter&0xFFFF; // write to control register to set the timer period
+    *(timer_ptr + 3) = CurrencyCounter>>16; // start timer
         /* set interrupt mask bits for IRQ 7 (PS2 interrupt) */
     int ctl3read;
     NIOS2_READ_IENABLE(ctl3read);
@@ -900,7 +899,7 @@ void timer_ISR(){
     volatile int *timer_ptr = (int *)0xFF202000; // timer base address
     *(timer_ptr) = 0; // clear the interrupt
     current_time++;
-    currency = currency + currencyIncreasingFactor;
+    currency++;
 
     if ((current_time & ENEMY_KNIGHT_SPAWN_INTERVAL) == 0){
         spawnEnemyKnight = true;

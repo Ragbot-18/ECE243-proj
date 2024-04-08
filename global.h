@@ -38,7 +38,7 @@ Last Updated: Mar. 24th, 2024
     do { dest = __builtin_rdctl(5); } while (0)
 
 // Game Related Definitions
-#define MAX_KNIGHTS 50
+#define MAX_KNIGHTS 100
 
 #define USER_TOWER_X 35
 #define USER_TOWER_X_EDGE 45
@@ -212,12 +212,10 @@ bool knightButtonPressed;
 bool currencyButtonPressed;
 bool spawnEnemyKnight;
 bool gameStart = false;
-
-int start_time;
-int last_currency_update; 
+ 
 int currency;
 int current_time;
-volatile int timer_count = 0; // unused
+int CurrencyCounter = 100000000; // start value of 100000000 (will update currency once per second)
 
 int user_tower_health;
 int enemy_tower_health;
