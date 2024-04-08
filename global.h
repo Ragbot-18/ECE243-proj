@@ -53,16 +53,24 @@ Last Updated: Mar. 24th, 2024
 #define KNIGHT_WALKING_HEIGHT 22
 #define KNIGHT_ATTACKING_WIDTH 27
 #define KNIGHT_ATTACKING_HEIGHT 19
+
 #define ENEMY_KNIGHT_SPAWN_INTERVAL 15
 
 #define KNIGHT_BUTTON_X 100
 #define KNIGHT_BUTTON_Y 190
-#define KNIGHT_BUTTON_WIDTH 34
+#define KNIGHT_BUTTON_WIDTH 38
 #define KNIGHT_BUTTON_HEIGHT 43
+#define CURRENCY_BUTTON_X 40
+#define CURRENCY_BUTTON_Y 190
+#define CURRENCY_BUTTON_WIDTH 38
+#define CURRENCY_BUTTON_HEIGHT 43
 
 #define DIGIT_WIDTH 6
 #define DIGIT_HEIGHT 10
 
+#define SMALL_DIGIT_WIDTH 3
+#define SMALL_DIGIT_HEIGHT 5
+#define SMALL_PERCENTAGE_WIDTH 7
 
 /*************************************************************************************************************/
 
@@ -77,21 +85,25 @@ void draw();
     void draw_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
     void erase_sprite(int x, int y, int width, int height, unsigned short int *sprite); 
         // sprite is the image array, x and y are the top left position of the sprite, width and height are the dimensions of the sprite
-    
+
     void draw_background();
     void draw_knight_button();
+    void draw_currency_button();
 
     void spawn_enemy_knight();
     void spawn_knight();
     bool hasVisibleKnights();
     void draw_knights();
-    void erase_knights();
+    void erase_knights(); // currently useless
     void update_knights();
     
     void draw_currency();
 void intializeSprites();
-//void draw();
-    //void update_positions --> have different parts of code to update different types of characters
+
+void draw_health_bar();
+void draw_box(int x, int y, int width, int height, short int color, int type);
+void draw_health_number(int health, int x, int y);
+
 
 void update_game();
 
@@ -109,7 +121,8 @@ void PS2_ISR(void);
 typedef enum {
     Intro,
     Game,
-    GameOver
+    GameWin,
+    GameLoss
 } gameState;
 
 
@@ -128,16 +141,19 @@ typedef struct Knight {
     int width;
     int height;
     int health;
+    int damage;
     int hitbox; // this is the right hand hitbox of the knight (xpos + width)
     int detectionRange; // this is the range past the hitbox that the knight will be scanning for entities
     spriteState state;
     unsigned short *image;
     int currentImage;
     bool isVisible;
+    int fight_type; // 0 for no fight, 1 for for enemy knights and 2 for enemy towers
+    int enemy_knight_number; // this is the index of the enemy knight that the knight is fighting
 
 } Knight;
 
-typedef struct Tower {
+typedef struct Tower { // might be able to remove this
     int xpos;
     int ypos;
     int width;
@@ -152,7 +168,7 @@ typedef struct Tower {
 
 } Tower;
 
-typedef struct Projectile {
+typedef struct Projectile { // probably can get rid of this
     int xpos;
     int ypos;
     int dx;
@@ -174,30 +190,36 @@ typedef struct Projectile {
 /*************************************************************************************************************/
 //GLOBAL VARIABLES
 
-// volatile int timer_count = 0;
-
 volatile char key_buffer[KEY_BUFFER_SIZE]; //pointer to the key buffer;
 volatile int key_buffer_count = 0; //counter for the key buffer;
-int g = 10; // gravity
+int g = 10; // gravity (can probably remove)
 
 struct fb_t { unsigned short volatile  pixels[256][512]; };
 struct fb_t *const fbp = ((struct fb_t *) 0x8000000);
-gameState currentGameState;
-const unsigned short int* current_background;
-
-int start_time;
-int last_currency_update; 
-int currency;
-int current_time;
-
 volatile int pixel_buffer_start;  // global variable for the pixel buffer
 short int Buffer1[240][512];      // 240 rows, 512 (320 + padding) columns
 short int Buffer2[240][512];
 int vgaWidth = 320;               // vga dimensions
 int vgaHeight = 240;
 
+gameState currentGameState;
+const unsigned short int* current_background;\
+
 bool knightButtonPressed;
+bool currencyButtonPressed;
 bool spawnEnemyKnight;
+bool gameStart;
+
+int start_time;
+int last_currency_update; 
+int currency;
+int current_time;
+volatile int timer_count = 0; // unused
+
+int user_tower_health;
+int enemy_tower_health;
+
+int currencyIncreasingFactor;
 /*************************************************************************************************************/
 
 #endif  // GLOBAL_H

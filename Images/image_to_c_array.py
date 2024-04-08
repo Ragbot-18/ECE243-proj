@@ -24,27 +24,26 @@ def image_to_c_array_file(image_path, output_file):
         
         file.write("};\n")
 
-image_path = 'small num_0.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_0.txt')
-image_path = 'small num_1.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_1.txt')
-image_path = 'small num_2.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_2.txt')
-image_path = 'small num_3.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_3.txt')
-image_path = 'small num_4.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_4.txt')
-image_path = 'small num_5.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_5.txt')
-image_path = 'small num_6.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_6.txt')
-image_path = 'small num_7.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_7.txt')
-image_path = 'small num_8.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_8.txt')
-image_path = 'small num_9.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_9.txt')
-image_path = 'small num_0.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small num_0.txt')
-image_path = 'small percentage.png'  # Replace with your image path
-image_to_c_array_file(image_path, 'small percentage.txt')
+image_path = 'Knight_Button1.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Knight_Button1.txt')
+image_path = 'Knight_Button2.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Knight_Button2.txt')
+image_path = 'Knight_Button3.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Knight_Button3.txt')
+image_path = 'Knight_Button4.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Knight_Button4.txt')
+image_path = 'Currency_Button1.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Currency_Button1.txt')
+image_path = 'Currency_Button2.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Currency_Button2.txt')
+image_path = 'Currency_Button3.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Currency_Button3.txt')
+image_path = 'Currency_Button4.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'Currency_Button4.txt')
+
+image_path = 'intro_background.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'intro_background.txt')
+image_path = 'win_background.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'win_background.txt')
+image_path = 'lose_background.png'  # Replace with your image path
+image_to_c_array_file(image_path, 'lose_background.txt')
